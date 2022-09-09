@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>视图对比</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #targetWindow,
+    #referenceWindow {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #referenceWindow {
+      position: absolute;
+      right: 0;
+      z-index: 0;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/css/main.css">
+  <link rel="stylesheet" href="../../../start/jQueryUI/jquery-ui.css">
+  <!--    <script src="json/extendjs/jquery-3.0.0.js"></script>-->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <!--引入图表插件-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+  <!--引入ArcGIS For JavaScript -->
+  <!--    <script src="../../../start/jQueryUI/jquery-ui.js"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+  <script src="https://js.arcgis.com/4.16/init.js"></script>
+  <script>
+    /**
+     * 把targetWindow和referenceWindow分开比较好（即主地图和参考地图分开定义和设置）
+     */
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/core/watchUtils",
+      "esri/widgets/Expand",
+      "esri/widgets/Fullscreen",
+      "esri/widgets/Sketch",
+      "esri/layers/GraphicsLayer",
+
+      "esri/geometry/Point",
+      "esri/Graphic",
+      "esri/widgets/Legend",
+      "esri/widgets/BasemapToggle",
+      "esri/widgets/TimeSlider",  //时间滑块
+      //3D
+      "esri/views/SceneView",
+      "esri/widgets/Fullscreen/FullscreenViewModel",
+      "esri/symbols/PictureMarkerSymbol",
+      "esri/renderers/visualVariables/ColorVariable",
+      "esri/symbols/MeshSymbol3D",
+      "esri/symbols/LineSymbol3DLayer",
+      "esri/symbols/PolygonSymbol3D"
+    ], function (Map, MapView, FeatureLayer, watchUtils, Expand, Fullscreen, Sketch, GraphicsLayer,
+      Point, Graphic, Legend, BasemapToggle, TimeSlider, SceneView, FullscreenViewModel, PictureMarkerSymbol,
+      ColorVariable, MeshSymbol3D, LineSymbol3DLayer, PolygonSymbol3D) {
+      /**
+       * targetWindowConfiguration 主地图设置
+       */
+      var targetWindowMap = new Map({
+        basemap: "osm",
+      });
+      var targetWindowView = new MapView({
+        map: targetWindowMap,
+        container: "targetWindow",
+        //地图中心坐标
+        center: [108.63033475, 34.36030168],
+        zoom: 12
+      });
+      /**
+       * referenceWindowConfiguration 参考地图设置
+       */
+      var referenceWindowMap = new Map({
+        basemap: "osm",
+      });
+      var referenceWindowView = new MapView({
+        map: referenceWindowMap,
+        container: "referenceWindow",
+        center: [108.63033475, 34.36030168],
+        zoom: 12,
+        ui: {
+          components: []
+        },
+        popup: {
+          dockOptions: {
+            position: "top-left"
+          }
+        }
+      });
+      //禁止参考窗口地图通过鼠标控制移动
+      referenceWindowView.on(["drag", "mouse-wheel"], function (event) {
+        event.stopPropagation()
+      });
+      //referenceWindow通过targetWindow来控制地图移动
+      targetWindowView.when(function () {
+        referenceWindowView.when(function () {
+          watchUtils.watch(targetWindowView, "extent", function (extent) {
+            //stationary表示targetWindowView中的地图移动完毕
+            if (targetWindowView.stationary) {
+              //将显示中心同步
+              referenceWindowView.goTo({
+                center: targetWindowView.center
+              })
+            }
+            //两个对比窗口的显示范围同步
+            referenceWindowView.extent = extent
+          })
+        })
+      });
+    })
+  </script>
+</head>
+
+<body style="overflow: hidden">
+  <div id="targetWindow" class="col-sm-6">
+    <form id="contrastSetting" class="form-inline divHidden" role="form">
+      <div class="form-group displayStyle">
+        <label>展示模式:</label>
+        <div class="options" id="displayStyle">
+          <label class="radio-inline">
+            <input type="radio" name="displayStyle" value="doubleDivs">双图
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div id="referenceWindow" class="col-sm-6"></div>
+</body>
+
+</html>

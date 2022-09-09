@@ -1,0 +1,60 @@
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Lux's Map</title>
+		<link rel="stylesheet" href="css/css02.css" />
+		<link rel="stylesheet" href="css/css_menu.css" />
+		<link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+		<script src="https://js.arcgis.com/4.10/"></script>
+		<script src="js/js02.js"></script>
+	</head>
+
+	<body>
+		<ul>
+			<li>
+				<a class="entypo-star" href="demo01.html"></a> <span>ChangeBaseMap</span>
+			</li>
+
+			<li>
+				<a class="entypo-newspaper" href="demo02.html"></a> <span>AddLayers</span>
+			</li>
+
+			<li>
+				<a class="entypo-link" href="demo03.html"></a> <span>LinkMap</span>
+			</li>
+
+			<li>
+				<a class="entypo-menu" href="demo04.html"></a> <span>LayerSwipe</span>
+			</li>
+		</ul>
+
+		<div id="viewDiv"></div>
+
+		<div id="LayerBox">
+			<p>添加图层</p>
+			<div id="SingleBox">
+				<a>&nbsp;&nbsp;AddPointLayer</a>
+				<div id="AddPoint" class="button_Add">√</div>
+				<div id="RemovePoint" class="button_Remove">×</div>
+			</div>
+			<div id="SingleBox">
+				<a>&nbsp;&nbsp;AddLineLayer</a>
+				<div id="AddLine" class="button_Add">√</div>
+				<div id="RemoveLine" class="button_Remove">×</div>
+			</div>
+			<div id="SingleBox">
+				<a>&nbsp;&nbsp;AddPolygonLayer</a>
+				<div id="AddPolygon" class="button_Add">√</div>
+				<div id="RemovePolygon" class="button_Remove">×</div>
+			</div>
+			<div id="Layers">
+			</div>
+			
+
+		</div>
+
+	</body>
+
+</html>
