@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" class="uname"><span class="message">请输入用户名</span>
+    <script>
+        //量词是设定某个模式出现的次数
+        var reg = /^[a-zA-Z0-9_-]$/ //这个模式用户只能输入英文字母 数字 下划线 短横线但是是有边界符和[] 这就是限定了只能多选一
+        var reg1 = /^[a-zA-Z0-9_-]{6,16}$/
+        //{6,16} 中间不要有空格
+        console.log(reg1.test('a'));
+        console.log(reg1.test('8'));
+        console.log(reg1.test('18'));
+        console.log(reg1.test('aa'));
+        console.log('-------------------');
+        console.log(reg1.test('andy-red'));
+        console.log(reg1.test('andy!007'));
+    </script>
+</body>
+
+</html>

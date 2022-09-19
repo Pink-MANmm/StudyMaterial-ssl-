@@ -36,8 +36,8 @@ require([
   const targetWindowView = new SceneView({
     container: "targetWindow",
     map: targetWindowMap,
-    center: [104.415, 31.1355],
-    zoom: 16
+    center: [104.15442473620293, 35.943228829155416],
+    zoom: 15
   });
   const referenceWindowMap = new Map({
     basemap: changeBasemap('8dcb11bfabb2493b893e5be933fcea3d'),
@@ -46,8 +46,8 @@ require([
   const referenceWindowView = new SceneView({
     map: referenceWindowMap,
     container: "referenceWindow",
-    center: [104.415, 31.1355],
-    zoom: 16,
+    center: [104.15442473620293, 35.943228829155416],
+    zoom: 15,
     ui: {
       components: []
     },
@@ -87,19 +87,19 @@ require([
   })*/
   targetWindowView.on("click", function (e) {
     geom = webMercatorUtils.xyToLngLat(e.mapPoint.x, e.mapPoint.y);
-    $('.pos:eq(0)').text(geom[0])
-    $('.pos:eq(1)').text(geom[1])
+    $('.pos:eq(0)').val(geom[0])
+    $('.pos:eq(1)').val(geom[1])
   });
 
   $('body').on('click', '#years .year', function () {
     $(this).addClass('active').siblings().removeClass('active')
-    $(this).css('backgroundColor', '#01456d').siblings().css('backgroundColor', 'rgb(39, 37, 37)')
+    $(this).css('backgroundColor', 'rgb(177, 174, 174)').siblings().css('backgroundColor', 'rgb(241, 236, 236)')
     targetWindowMap.basemap = changeBasemap($(this).attr('id'))
   })
 
   $('body').on('click', '#years_right .year', function () {
     $(this).addClass('active').siblings().removeClass('active')
-    $(this).css('backgroundColor', '#01456d').siblings().css('backgroundColor', 'rgb(39, 37, 37)')
+    $(this).css('backgroundColor', 'rgb(177, 174, 174)').siblings().css('backgroundColor', 'rgb(241, 236, 236)')
     referenceWindowMap.basemap = changeBasemap($(this).attr('id'))
   })
 
@@ -269,6 +269,9 @@ require([
     screenshotDiv.classList.add("hide");
   });
   //功能区交互
+  $('#logout').on('click', function () {
+    location.href = '/'
+  })
   function getLocaldata() {
     $.ajax({
       url: '/get/',
@@ -293,10 +296,10 @@ require([
     $('#missions').empty()
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].name.length >= 6) {
-        const $info = $('<div class="Mission"><div class="missionName" lon="' + arr[i].longitude + '" lat="' + arr[i].latitude + '" zoom="' + arr[i].zoom + '" name="' + arr[i].name + '">' + arr[i].name.slice(0, 6) + '...</div><div id="' + i + '" class="del">X</div></div>')
+        const $info = $('<div class="Mission"><div id="' + (i + 1) + '" class="missionName" lon="' + arr[i].longitude + '" lat="' + arr[i].latitude + '" zoom="' + arr[i].zoom + '" name="' + arr[i].name + '">' + arr[i].name.slice(0, 6) + '...</div><div id="' + i + '" class="del">X</div></div>')
         $('#missions').append($info)
       } else {
-        const $info = $('<div class="Mission"><div class="missionName" lon="' + arr[i].longitude + '" lat="' + arr[i].latitude + '" zoom="' + arr[i].zoom + '" name="' + arr[i].name + '">' + arr[i].name + '</div><div id="' + i + '" class="del">X</div></div>')
+        const $info = $('<div class="Mission"><div id="' + (i + 1) + '" class="missionName" lon="' + arr[i].longitude + '" lat="' + arr[i].latitude + '" zoom="' + arr[i].zoom + '" name="' + arr[i].name + '">' + arr[i].name + '</div><div id="' + i + '" class="del">X</div></div>')
         $('#missions').append($info)
       }
     }
@@ -360,27 +363,198 @@ require([
     }
   })
   $('#missions').on('click', '.missionName', function () {
-    $(this).css('backgroundColor', '#01456d').parent().siblings().children(':first-child').css('backgroundColor', '#000000')
+    $(this).css('backgroundColor', 'rgb(216, 212, 212)').parent().siblings().children(':first-child').css('backgroundColor', 'rgb(241, 236, 236)')
     targetWindowView.center = [parseFloat($(this).attr('lon')), parseFloat($(this).attr('lat'))]
     targetWindowView.zoom = parseInt($(this).attr('zoom'))
     referenceWindowView.center = [parseFloat($(this).attr('lon')), parseFloat($(this).attr('lat'))]
     referenceWindowView.zoom = parseInt($(this).attr('zoom'))
   })
   $('#compare').on('click', function () {
-    if (parseInt($(this).attr('status')) == '1') {
-      $('#years_right').css('display', 'block')
-      $('#referenceWindow').attr('id', 'referenceWindow1')
-      $('#targetWindow').attr('id', 'targetWindow1')
-      $('#main').css('margin-right', '316px')
-      $(this).attr('status', '2')
-      $('#compare').text('单屏')
-    } else {
-      $('#years_right').css('display', 'none')
-      $('#referenceWindow1').attr('id', 'referenceWindow')
-      $('#targetWindow1').attr('id', 'targetWindow')
-      $('#main').css('margin-right', '170px')
-      $(this).attr('status', '1')
-      $('#compare').text('双屏')
+    if ($('#Missions').attr('Status') === '1') {
+      console.log(1)
+      if (parseInt($(this).attr('status')) == '1') {
+        $('#years').css('display', 'block')
+        $('#years_right').css('display', 'block')
+        $('#referenceWindow').attr('id', 'referenceWindow1')
+        $('#targetWindow').attr('id', 'targetWindow1')
+        $('#main').css({ 'margin-right': '310px', 'margin-left': '140px' })
+        $(this).attr('status', '2')
+      } else {
+        $('#years').css('display', 'none')
+        $('#years_right').css('display', 'none')
+        $('#referenceWindow1').attr('id', 'referenceWindow')
+        $('#targetWindow1').attr('id', 'targetWindow')
+        $('#main').css({ 'margin-right': '170px', 'margin-left': '0' })
+        $(this).attr('status', '1')
+      }
+    } else if ($('#Missions').attr('Status') === '2') {
+      console.log(2)
+      if (parseInt($(this).attr('status')) == '1') {
+        $('#years').css('display', 'block')
+        $('#years_right').css('display', 'block')
+        $('#referenceWindow').attr('id', 'referenceWindow1')
+        $('#targetWindow').attr('id', 'targetWindow1')
+        $('#main').css({ 'margin-right': '140px', 'margin-left': '140px' })
+        $(this).attr('status', '2')
+      } else {
+        $('#years').css('display', 'none')
+        $('#years_right').css('display', 'none')
+        $('#referenceWindow1').attr('id', 'referenceWindow')
+        $('#targetWindow1').attr('id', 'targetWindow')
+        $('#main').css({ 'margin-right': '0', 'margin-left': '0' })
+        $(this).attr('status', '1')
+      }
     }
+  })
+  $('#Missions').on('click', function () {
+    if (parseInt($(this).attr('Status')) == '1') {
+      if ($('#compare').attr('status') == '1') {
+        $('#function').css('display', 'none')
+        $('#main').css('margin-right', '0px')
+        $(this).attr('Status', '2')
+      } else {
+        $('#function').css('display', 'none')
+        $('#main').css('margin-right', '146px')
+        $(this).attr('Status', '2')
+      }
+    } else if (parseInt($(this).attr('Status')) == '2') {
+      if ($('#compare').attr('status') == '1') {
+        $('#function').css('display', 'block')
+        $('#main').css('margin-right', '170px')
+        $(this).attr('Status', '1')
+      } else {
+        $('#function').css('display', 'block')
+        $('#main').css('margin-right', '316px')
+        $(this).attr('Status', '1')
+      }
+    }
+  })
+  $('.nav').hover(
+    function () { $(this).children('div').css('display', 'block') },
+    function () { $(this).children('div').css('display', 'none') }
+  )
+  var dom = document.getElementById('myChart');
+  var myChart = echarts.init(dom, null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var app = {};
+
+  var option;
+
+  let base = +new Date(1968, 9, 3);
+  let date = [];
+  let data = [30];
+  for (let i = 1; i < 10; i++) {
+    date.push(2013 + i);
+    if (i <= 8) {
+      data.push(Math.round((Math.random() - 0.5) * 4 + data[i - 1]));
+    } else if (i == 9) {
+      data.push(10)
+    }
+  }
+  option = {
+    tooltip: {
+      trigger: 'axis',
+      position: function (pt) {
+        return [pt[0], '10%'];
+      }
+    },
+    title: {
+      left: 'center',
+      text: '湖泊水位变化'
+    },
+    toolbox: {
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: date
+    },
+    yAxis: {
+      type: 'value',
+      boundaryGap: [0, '100%']
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        start: 0,
+        end: 10
+      }
+    ],
+    series: [
+      {
+        name: '水位高度',
+        type: 'line',
+        symbol: 'none',
+        sampling: 'lttb',
+        itemStyle: {
+          color: 'rgb(255, 70, 131)'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgb(255, 158, 68)'
+            },
+            {
+              offset: 1,
+              color: 'rgb(255, 70, 131)'
+            }
+          ])
+        },
+        data: data.slice(1, 10)
+      }
+    ]
+  };
+
+  $('#AI_content').css('display', 'none')
+
+  if (option && typeof option === 'object') {
+    myChart.setOption(option);
+  }
+  window.addEventListener('resize', myChart.resize);
+  $('#close').on('click', function () {
+    $('#AI_content').animate({
+      opacity: 0
+    }, 100, 'swing', function () {
+      $(this).css('display', 'none')
+    })
+    $('#myChart').css('display', 'none')
+    $('#recognize').css('display', 'none')
+    $(this).attr('status', '1')
+  })
+  $('#Mission_landform').on('click', function () {
+    $('#AI_content').css('display', 'block')
+    $('#AI_content').animate({
+      opacity: 1
+    }, 100, 'swing', function () {
+    })
+    $('#myChart').css('display', 'block')
+    $('#recognize').css('display', 'none')
+    $(this).attr('status', '2')
+    $('#5').click()
+  })
+  $('#Mission_identify').on('click', function () {
+    $('#AI_content').css('display', 'block')
+    $('#AI_content').animate({
+      opacity: 1
+    }, 100, 'swing', function () {
+    })
+    $('#recognize').css('display', 'block')
+    $('#myChart').css('display', 'none')
+    $(this).attr('status', '2')
+    $('#3').click()
   })
 });

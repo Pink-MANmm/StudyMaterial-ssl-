@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //forEach迭代（便利）数组
+        var arr = [1, 2, 3];
+        var sum = 0
+        arr.forEach(function (value, index, array) {
+            console.log('每一个数组元素' + value);
+            console.log('每一个数组元素的索引号' + index);
+            console.log('数组本身' + array);
+            sum += value;
+        })
+        console.log(sum);
+        //filter筛选数组
+        var newArr = arr.filter(function (value, index, array) {
+            return value >= 2
+        })
+        console.log(newArr);
+        //some查找数组中是否有满足条件的元素
+        var flag = arr.some(function (value) {
+            return value >= 2
+        })
+        console.log(flag)//找到第一个满足的元素则会停止循环
+        //map()类似于forEach(),而every()类似于some()
+
+        //trim方法去除字符串两侧空格
+        var str = '  an  dy  '
+        console.log(str);
+        var str1 = str.trim()
+        console.log(str1);
+    </script>
+</body>
+
+</html>

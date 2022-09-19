@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //1.创建类class 创建一个明星类
+        //constructor()方法是类的构造函数（默认方法），用于传递参数，返回实例对象，通过new命令生成对象实例时，自动调用该方法。如果没有显示定义，类内部会自动给我们创建一个constructor（）
+        class Star {
+            constructor(uname, age) {
+                this.uname = uname;
+                this.age = 18
+            }
+            //创建方法，不需要function
+            sing(song) {
+                console.log(this.uname + song)
+            }
+        }
+        //2.利用类创建对象 new
+        var ldh = new Star('刘德华', 18);
+        console.log(ldh.uname, ldh.age)
+        ldh.sing('冰雨')
+    </script>
+</body>
+
+</html>

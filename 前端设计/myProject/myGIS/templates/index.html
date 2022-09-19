@@ -6,13 +6,40 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>ArcGIS API for JavaScript Tutorials: Add a styled basemap layer</title>
   <link rel="stylesheet" href="../static/main.css">
+  <script src="../static/echarts.min.js"></script>
+  <script src="../static/jquery-3.5.1.min.js"></script>
   <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css">
   <script src="https://js.arcgis.com/4.24/"></script>
-  <script src="../static/jquery-3.5.1.min.js"></script>
-  <script src="../static/controller.js"></script>
 </head>
 
 <body>
+  <div id="navigation">
+    <div id="logout">logout</div>
+    <div id="Missions" Status="2" class="nav">
+      <div class="flag"></div>监测任务
+    </div>|
+    <div id="compare" status="1" class="nav">
+      <div class="flag"></div><span id="com">时间戳对比</span>
+    </div>|
+    <div id="landform" class="nav">
+      <div class="flag"></div>地貌变化
+      <div id="missionList_landform">
+        <div id="missions_landform">
+          <div id="Mission_landform">牛王庙</div>
+        </div>
+        <div id="addMission_landform">+</div>
+      </div>
+    </div>|
+    <div id="identify" class="nav">
+      <div class="flag"></div>物体识别
+      <div id="missionList_identify">
+        <div id="missions_identify">
+          <div id="Mission_identify">榆中县军用机场</div>
+        </div>
+        <div id="addMission_identify">+</div>
+      </div>
+    </div>
+  </div>
   <div id="option">
     <div class="line">
       <p id="p1">任务名称:</p><input type="text" id="Name">
@@ -54,8 +81,6 @@
       <div id="missions"></div>
       <div id="addMission">+</div>
     </div>
-    <div id="compare" status="1">双屏</div>
-    <div id="AI">AI识别</div>
   </div>
   <div id="years">
     <div class='year' id="5ec29361342b489b8c975b8674166bdc">2022-08-10</div>
@@ -382,10 +407,21 @@
   <div id="maskDiv" class="hide screenshotCursor"></div>
   <div id="position">
     <p class="lPos">经度：</p>
-    <div class="pos">0.00</div>
+    <input type="text" class="pos" value="0.00">
     <p class="lPos">纬度：</p>
-    <div class="pos">0.00</div>
+    <input type="text" class="pos" value="0.00">
   </div>
+  <div id="AI_content" style="display: block;">
+    <div id="close">X</div>
+    <div id="myChart"></div>
+    <div id="recognize">
+      <img src="../static/pic1.png" alt="" id="imag1">
+      <span id="span1">飞机数目: <input type="text" value="12" class="recIn"> | 2022/8/10</span>
+      <img src="../static/pic2.png" alt="" id="imag2">
+      <span id="span2">飞机数目: <input type="text" value="07" class="recIn"> | 2020/8/12</span>
+    </div>
+  </div>
+  <script src="../static/controller.js"></script>
 </body>
 
 </html>

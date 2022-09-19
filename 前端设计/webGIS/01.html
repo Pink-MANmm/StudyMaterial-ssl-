@@ -1,82 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Test local installation of ArcGIS API for JavaScript</title>
-    <style>
-      html,
-      body,
-      #viewDiv {
-        padding: 0;
-        margin: 0;
-        height: 93%;
-        width: 100%;
-      }
-    </style>
+<html lang="zh-CN">
 
-    <link rel="stylesheet" href="./esri/themes/light/main.css" />
-    <script src="./init.js"></script>
+<head>
+  <meta charset="utf-8">
+  <title>Large scale area chart - Apache ECharts Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
 
-    <script>
-      require(["esri/Basemap", "esri/layers/TileLayer", "esri/Map", "esri/views/SceneView"], function (
-        Basemap,
-        TileLayer,
-        Map,
-        SceneView
-      ) {
-        // --------------------------------------------------------------------
-        // If you do not have public internet access, change the layer URL to
-        // point to your own locally accessible cached service.
-        // --------------------------------------------------------------------
-        const layer = new TileLayer({
-          url: "https://metadata.maptiles.arcgis.com/arcgis/rest/services/World_Imagery_Metadata_2022_r10/MapServer"
-        });
-        const customBasemap = new Basemap({
-          baseLayers: [layer],
-          title: "My Basemap"
-        });
-        const myMap = new Map({
-          basemap: customBasemap
-        });
-        const view = new SceneView({
-          container: "viewDiv",
-          map: myMap
-        });
+    #AI_content {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+  </style>
 
-        checkThisOne("./esri/views/3d/environment/resources/stars.wsv", "wsv mimetype");
-        checkThisOne("./esri/t9n/basemaps.json", "json mimetype");
-        checkThisOne("./esri/themes/base/icons/fonts/CalciteWebCoreIcons.ttf", "ttf mimetype");
-        checkThisOne("./esri/themes/base/icons/fonts/CalciteWebCoreIcons.woff", "woff mimetype");
+  <script src="https://fastly.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+  <script src="./jquery-3.5.1.min.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.24/"></script>
+</head>
 
-        function checkThisOne(url, desc) {
-          fetch(url, {
-            method: "HEAD"
-          })
-            .then(function (response) {
-              if (response.ok) {
-                logDiv.innerHTML += "* OK: " + desc + "<br/>";
-                if (response.status !== 200) {
-                  logDiv.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;status: " + response.status + "<br/>";
-                }
-                return response.blob();
-              } else {
-                // response not ok
-                logDiv.innerHTML +=
-                  "* HTTP error " + response.status + ' for <a href="' + url + '">' + url + "</a><br/>";
-                alert("Problem accessing " + desc);
-              }
-            })
-            .catch(function (error) {
-              logDiv.innerHTML += '* BAD: <a href="' + url + '">' + url + "</a><br/>";
-            });
+<body>
+  <div id="AI_content"></div>
+  <script>
+    var dom = document.getElementById('AI_content');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+
+    let base = +new Date(1968, 9, 3);
+    let oneDay = 24 * 3600 * 1000;
+    let date = [];
+    let data = [Math.random() * 300];
+    for (let i = 1; i < 20000; i++) {
+      var now = new Date((base += oneDay));
+      date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
+      data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+    }
+    option = {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
         }
-      });
-    </script>
-  </head>
+      },
+      title: {
+        left: 'center',
+        text: 'Large Area Chart'
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: 'none'
+          },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: date
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%']
+      },
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 0,
+          end: 10
+        },
+        {
+          start: 0,
+          end: 10
+        }
+      ],
+      series: [
+        {
+          name: 'Fake Data',
+          type: 'line',
+          symbol: 'none',
+          sampling: 'lttb',
+          itemStyle: {
+            color: 'rgb(255, 70, 131)'
+          },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              {
+                offset: 0,
+                color: 'rgb(255, 158, 68)'
+              },
+              {
+                offset: 1,
+                color: 'rgb(255, 70, 131)'
+              }
+            ])
+          },
+          data: data
+        }
+      ]
+    };
 
-  <body>
-    <div id="viewDiv"></div>
-    <div id="logDiv"></div>
-  </body>
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+
 </html>
