@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //let声明的变量只在所处于的块级有效(即{}内有效，以外无效) ; 防止循环变量变成全局变量
+        //使用let声明的变量没有变量提升,必须先声明在调用
+        console.log(a);
+        let a = 100
+        //使用let声明的变量具有暂时性死区
+        var temp = 123
+        if (true) {
+            console.log(temp);//括号内调用temp只会与let声明的temp绑定，与外界var声明的temp无关
+            let temp
+        }
+        //大括号内外同名temp变量之间没有任何影响
+        //------------------------------------------------------------------------------------------
+        //const 作用：声明常量，常量就是值(内存地址)不能变化的量
+        //同样具有块级作用域
+        //声明常量时必须赋值
+        //常量复制后，值不能修改
+        const PI = 3.14
+        //PI=100  报错
+        const ary = [100, 200]
+        ary[0] = 123
+        console.log(ary);//不报错，因为未修改内存地址
+        ary = [1, 2]
+        console.log(ary);//报错，修改了内存地址
+    </script>
+</body>
+
+</html>
