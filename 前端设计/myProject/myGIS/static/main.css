@@ -162,34 +162,25 @@ body {
     box-shadow: 0 8px 5px rgb(203, 199, 199);
 }
 
+#missionList_identify,
 #missionList_landform {
     position: absolute;
     top: 45px;
     display: none;
     width: 100%;
-    height: 280px;
+    height: 296px;
     background-color: rgb(189, 185, 185);
     box-shadow: 0 2px 5px rgb(150, 146, 146);
     z-index: 1;
 }
 
-#missionList_identify {
-    position: absolute;
-    top: 45px;
-    display: none;
-    width: 100%;
-    height: 280px;
-    background-color: rgb(189, 185, 185);
-    box-shadow: 0 2px 5px rgb(150, 146, 146);
-    z-index: 1;
-}
 
-#Mission_landform {
+.Mission_landform {
     cursor: pointer;
     border-bottom: 1px solid rgb(66, 64, 64);
 }
 
-#Mission_identify {
+.Mission_identify {
     cursor: pointer;
     border-bottom: 1px solid rgb(66, 64, 64);
 }
@@ -208,7 +199,15 @@ body {
     overflow-y: scroll;
 }
 
+#missions_landform {
+    height: 250px;
+    overflow-y: scroll;
+}
 
+#missions_identify {
+    height: 250px;
+    overflow-y: scroll;
+}
 
 #addMission {
     height: 30px;

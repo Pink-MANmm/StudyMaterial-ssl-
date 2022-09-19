@@ -304,7 +304,26 @@ require([
       }
     }
   }
+  function render_nav() {
+    console.log(1)
+    $('#missions_landform').empty()
+    $('#missions_identify').empty()
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].name.length >= 6) {
+        const $info_landform = $('<div class="Mission_landform">' + arr[i].name.slice(0, 6) + '...</div>')
+        const $info_identify = $('<div class="Mission_identify">' + arr[i].name.slice(0, 6) + '...</div>')
+        $('#missions_landform').append($info_landform)
+        $('#missions_identify').append($info_identify)
+      } else {
+        const $info_landform = $('<div class="Mission_landform">' + arr[i].name + '</div>')
+        const $info_identify = $('<div class="Mission_identify">' + arr[i].name + '</div>')
+        $('#missions_landform').append($info_landform)
+        $('#missions_identify').append($info_identify)
+      }
+    }
+  }
   render()
+  render_nav()
   $('.line:eq(3)').on('click', '#add', function () {
     $('#missions').empty()
     let miss = {
@@ -326,6 +345,7 @@ require([
       })
       localStorage.setItem('data', JSON.stringify(arr))
       render()
+      render_nav()
       $('#Name').val('')
       $('#Lon').val('')
       $('#Lat').val('')
@@ -360,6 +380,7 @@ require([
       })
       localStorage.setItem('data', JSON.stringify(arr))
       render()
+      render_nav()
     }
   })
   $('#missions').on('click', '.missionName', function () {
@@ -535,7 +556,7 @@ require([
     $('#recognize').css('display', 'none')
     $(this).attr('status', '1')
   })
-  $('#Mission_landform').on('click', function () {
+  $('.Mission_landform').on('click', function () {
     $('#AI_content').css('display', 'block')
     $('#AI_content').animate({
       opacity: 1
@@ -546,7 +567,7 @@ require([
     $(this).attr('status', '2')
     $('#5').click()
   })
-  $('#Mission_identify').on('click', function () {
+  $('.Mission_identify').on('click', function () {
     $('#AI_content').css('display', 'block')
     $('#AI_content').animate({
       opacity: 1
