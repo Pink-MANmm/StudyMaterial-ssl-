@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jquery-3.5.1.min.js"></script>
+</head>
+
+<body>
+    <button id="btnGET">GET</button>
+    <button id="btnPOST">POST</button>
+    <button id="btnDELETE">DELETE</button>
+    <button id="btnJSONP">JSONP</button>
+    <script>
+        //接口的跨域问题
+        //刚才编写的GET和POST接口，存在一个很严重的问题：不支持跨域请求
+        //解决接口跨域问题的方案主要有两种：
+        //1.CORS（主流的解决方案，推荐使用）
+        //2.JSONP（有缺陷的解决方案：只支持GET请求）
+
+        //open with default browser使用的是file://协议，而ajax使用的是http协议，从而存在跨域问题
+        $(function () {
+            //1.测试GET接口
+            $('#btnGET').on('click', function () {
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://127.0.0.1:84/api/get',
+                    data: { name: 'zs', age: 20 },
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+            //2.测试POST接口
+            $('#btnPOST').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://127.0.0.1:84/api/post',
+                    data: { bookname: '水浒传', author: '施耐庵' },
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+            $('#btnDELETE').on('click', function () {
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'http://127.0.0.1:84/api/delete',
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+            $('#btnJSONP').on('click', function () {
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'jsonp',//表示要发起JSONP请求
+                    url: 'http://127.0.0.1:84/api/jsonp',
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>
