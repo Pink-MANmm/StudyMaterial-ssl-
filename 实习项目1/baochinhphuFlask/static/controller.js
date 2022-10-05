@@ -49,26 +49,6 @@ function init(data,dataLength) {
         }
         $('#page').html('第' + page + '/' + Math.ceil(dataLength / 20) + '页')
     }
-    else if(Country=='yuenanDB1'){
-        $('tbody').empty()
-        empty=0
-        for (var i = contentStart; i < contentEnd; i++) {
-            if(data['data']['href'][i]){
-                if(data['data']['title'][i]!='') {
-                    let $table_data = $('<tr class="singleInfo" id="' + i + '">' +
-                        '<td class="list1">' + data['data']['date'][i] + '</td>' +
-                        '<td class="list2"><a class="link" target="_blank" href="https://baochinhphu.vn' + data['data']['href'][i] + '">' + data['data']['title'][i] + '</a></td>' +
-                        '</tr>')
-                    $('tbody').append($table_data)
-                }
-                else if(data['data']['title'][i]==''){
-                    contentEnd+=1
-                    empty++
-                }
-            }
-        }
-        $('#page').html('第' + page + '/' + Math.ceil(dataLength / 20) + '页')
-    }
     else if(Country=='pakistanDB'){
         $('tbody').empty()
         empty=0
@@ -99,27 +79,6 @@ function init(data,dataLength) {
                     let $table_data = $('<tr class="singleInfo" id="' + i + '">' +
                         '<td class="list1">' + data['data']['date'][i] + '</td>' +
                         '<td class="list2"><a class="link" target="_blank" href="https://timesofindia.indiatimes.com' + data['data']['href'][i] + '">' + data['data']['title'][i] + '</a></td>' +
-                        '</tr>')
-                    $('tbody').append($table_data)
-                }
-                else if(data['data']['title'][i]==''){
-                    contentEnd+=1
-                    empty++
-                }
-            }
-        }
-        contentEnd=contentEnd-empty
-        $('#page').html('第' + page + '/' + Math.ceil(dataLength / 20) + '页')
-    }
-    else if(Country=='pakistanDB2'){
-        $('tbody').empty()
-        empty=0
-        for (var i = contentStart; i < contentEnd;i++ ) {
-            if(data['data']['href'][i]){
-                if(data['data']['title'][i]!='') {
-                    let $table_data = $('<tr class="singleInfo" id="' + i + '">' +
-                        '<td class="list1">' + data['data']['date'][i] + '</td>' +
-                        '<td class="list2"><a class="link" target="_blank" href="' + data['data']['href'][i] + '">' + data['data']['title'][i] + '</a></td>' +
                         '</tr>')
                     $('tbody').append($table_data)
                 }

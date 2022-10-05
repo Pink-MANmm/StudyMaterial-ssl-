@@ -1,13 +1,19 @@
 var chartDom = document.getElementById('mood');
 var Mood = echarts.init(chartDom);
 var moodOption;
-var size=8;//字体大小
+var size = 8;//字体大小
 moodOption = {
-  title:{
-    text:"情感趋势"
+  title: {
+    text: "情感趋势",
+    textStyle: {
+      color: 'rgba(255,255,255,0.75)'
+    }
   },
   legend: {
-    data: ['积极趋势', '消极趋势', '总体趋势']
+    data: ['积极趋势', '消极趋势', '总体趋势'],
+    textStyle: {
+      color: 'rgba(255,255,255,0.75)'
+    }
   },
   xAxis: {
     type: 'category',
@@ -23,8 +29,8 @@ moodOption = {
       label: {
         show: 'true',
         position: 'top',
-        textStyle:{
-          fontSize:size
+        textStyle: {
+          fontSize: size,
         }
       },
       data: [],
@@ -41,10 +47,10 @@ moodOption = {
 
       label: {
         show: 'true',
-        position: 'top',    
-        textStyle:{
-            fontSize:size
-          },
+        position: 'top',
+        textStyle: {
+          fontSize: size,
+        },
       },
       areaStyle: {}
     },
@@ -55,11 +61,11 @@ moodOption = {
       label: {
         show: 'true',
         position: 'bottom',
-        textStyle:{
-          fontSize:size
+        textStyle: {
+          fontSize: size,
         },
       },
-      color:"#3172eb",
+      color: "#3172eb",
       areaStyle: {}
     }
   ]

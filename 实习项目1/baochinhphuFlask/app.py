@@ -15,14 +15,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def flask():
-    return render_template('index.html')
+    return render_template('yuenan.html')
 
 @app.route('/越南')
 def yuenan():
-    return render_template('index.html')
-
-@app.route('/越南(越南语)')
-def yuenan1():
     return render_template('yuenan.html')
 
 @app.route('/巴基斯坦')
@@ -32,10 +28,6 @@ def pakistan():
 @app.route('/印度')
 def yindu():
     return render_template('yindu.html')
-
-@app.route('/巴基斯坦2')
-def pakistan2():
-    return render_template('pakistan2.html')
 
 @app.route('/get_dbLength',methods=['get','post'])
 def get_dbLength():
