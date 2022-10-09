@@ -1,0 +1,12 @@
+1.语法
+COUNT(*)函数用于返回查询结果的总数据条数，语法格式如下：
+SELECT COUNT(*) FROM 表名称
+
+2.COUNT(*)示例如下：
+查询users表中status为0的总数据条数
+SELECT COUNT(*) FROM users WHERE status=0
+
+3.使用AS为列设置别名
+如果希望给查询出来的列名称设置别名，可以使用AS关键字，示例如下：
+SELECT COUNT(*) AS total FROM users WHERE status=0
+SELECT username AS uname,password AS upwd FROM users

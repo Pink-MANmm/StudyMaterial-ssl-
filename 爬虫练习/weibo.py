@@ -1,115 +1,70 @@
-import os
-import re  #正则表达式提取文本
+import time
 
-import requests  #发送请求
-import pandas as pd  #存取csv数据
-import datetime  #转换时间
+import requests
+from scrapy import Selector
+import pandas as pd
 
-
-def trans_time(v_str):
-    """转换GMT时间为标准格式"""
-    GMT_FORMAT = '%a %b %d %H:%M:%S +0800 %Y'
-    timeArray = datetime.datetime.strptime(v_str,GMT_FORMAT)
-    ret_time = timeArray.strptime("%Y-%m-%d %H:%M:%S")
-    return ret_time
-
-def get_weibo_list(v_keyword,v_max_page):
-    """
-    爬取微博内容列表
-    :param v_keyword: 搜索关键字
-    :param v_max_page: 爬取前几页
-    :return: None
-    """
-    #请求头
+df=pd.DataFrame()
+userName=[]
+Content=[]
+Share=[]
+Comment=[]
+Like=[]
+for page in range(1,30):
+    print(page)
+    url = f'https://s.weibo.com/weibo?q=唐山打人案宣判&page={page}'
+    print(url)
     headers = {
-        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
-        'accept':'application/json, text/plain, */*',
+        'authority': 's.weibo.com',
+        'method': 'GET',
+        'path': f'/weibo?q=%E5%94%90%E5%B1%B1%E6%89%93%E4%BA%BA%E6%A1%88%E5%AE%A3%E5%88%A4&page={page}',
+        'scheme': 'https',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'accept-encoding': 'gzip, deflate, br',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'cache-control': 'max-age=0',
+        'cookie': '_s_tentry=passport.weibo.com; Apache=5969283656414.706.1665022930677; SINAGLOBAL=5969283656414.706.1665022930677; ULV=1665022930686:1:1:1:5969283656414.706.1665022930677:; PC_TOKEN=90e6456205; WBtopGlobal_register_version=2022100610; crossidccode=CODE-tc-1OGgx3-3Ifh9W-Rmaca7QYdOdx43pd81973; SSOLoginState=1665022967; SUB=_2A25OOkunDeThGeNG71UT8SvEyDSIHXVtxVXvrDV8PUJbkNAKLULNkW1NS0Q1QIB3HwHQmx1BuZfNOe7IqAcZBag8; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WWQ_z6TnOh0pGceRqCnnI6V5NHD95Qf1hBNeo2f1heRWs4DqcjPi--ci-zEiKnRi--fiKLsiKy8SKBRe0zt',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'
     }
-for page in range(1,v_max_page + 1):
-    print('===开始爬取第{}页微博==='.format(page))
-    url='https://m.weibo.cn/api/container/getIndex?containerid=100103type=1&q=唐山打人案宣判&page_type=searchall'
-    params = {
-        "containerid":"100103type=1&q={}".format(v_keyword),
-        "page_type":"searchall",
-        "page":page
-    }
-
-    r = requests.get(url,headers=headers,params=params)
-    print(r.status_code)
-
-    cards = r.json()["data"]["cards"]
-
-    text_list = jsonpath(cards,'$..mblog.text')
-
-    dr = re.compile(r'<[^>]=>',re.S)
-    text2_list = []
-    print(text_list)
-    if not text_list:
-        continue
-    if type(text_list) == list and len(text_list) > 0:
-        for text in text_list:
-            text2 = dr.sub('',text)
-            print(text2)
-            text2_list.append(text2)
-            #微博创建时间
-            time_list = jsonpath(cards,'$..mblog.user.screen_name')
-            time_list = [trans_time(v_str=i)for i in time_list]
-            #微博作者
-            author_list = jsonpath(cards,'$..mblog.user.screen_name')
-            #微博id
-            id_list = jsonpath(cards,'$..mblog.id')
-            #微博bid
-            bid_list = jsonpath(cards,'$..mblog.bid')
-            #转发数
-            reposts_count_list =jsonpath(cards,'$..mblog.reposts_count')
-            #评论数
-            comments_count_list = jsonpath(cards,'$..mblog.comments_count')
-            #点赞数
-            attitudes_count_list = jsonpath(cards,'$..mblog.attitudes_count')
-            #数据导入dataframe库
-            df = pd.DataFrame(
-                {
-                    '页码': [page] * len(id_list),
-                    '微博id': id_list,
-                    '微博bid': bid_list,
-                    '微博作者': author_list,
-                    '发布时间': time_list,
-                    '微博内容': text2_list,
-                    '转发数': reposts_count_list,
-                    '评论数': comments_count_list,
-                    '点赞数': attitudes_count_list,
-                }
-            )
-            #表头
-            if os.path.exeists(v_weibo_file):
-                header = None
-            else:
-                header = ['页码','微博id','微博bid','微博作者','发布时间','微博内容','转发数','评论数','点赞数']
-                #保存到csv文件
-                df.to_csv(v_weibo_file,mode='a+',index=False,header=header,encoding='utf_8_sig')
-                print('csv保存成功:{}'.format(v_weibo_file))
-
-
-
-
-
-if __name__ == '__main__':
-    max_search_page = 100  #爬前n页
-    #爬取关键字
-    search_keyword = '唐山打人案宣判'
-    #保存文件名
-    v_weibo_file ='微博清单_{}_前{}页.csv'.format(search_keyword,max_search_page)
-    #如果scv文件存在，先删除之
-    if os.path.exists(v_weibo_file):
-        os.remove(v_weibo_file)
-        print('微博清单已存在，已删除：{}'.format(v_weibo_file))
-        #调用爬取微博函数
-        get_weibo_list(v_keyword=search_keyword,v_max_page=max_search_page)
-        #数据清洗-去重
-        df = pd.read_csv(v_weibo_file)
-        #删除重复数据
-        df.drop_dulplicates(subset=['微博bid'],inplace=True,keep='first')
-        #再次保存csv文件
-        df.to_scv(v_weibo_file,index=False,encodings='utf_8_sig')
-        print('数据清洗完成')
+    response=requests.get(url=url,headers=headers)
+    sel=Selector(response)
+    selectors=sel.css('div#pl_feedlist_index>div:nth-child(2)>div.card-wrap')
+    for selector in selectors:
+        if selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content_full"]::attr(nick-name)').extract()!=[]:
+            name=selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content_full"]::attr(nick-name)').extract()[0]
+            content=''.join(selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content_full"]::text').extract())
+        elif selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content"]::attr(nick-name)').extract()!=[]:
+            name = selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content"]::attr(nick-name)').extract()[0]
+            content = ''.join(selector.css('div.card>div.card-feed>div.content>p[node-type="feed_list_content"]::text').extract())
+        if selector.css('div.card>div.card-act>ul>li:first-child>a::text').extract()[1]==' 转发':
+            share=0
+        else:
+            share=selector.css('div.card>div.card-act>ul>li:first-child>a::text').extract()[1]
+        if  selector.css('div.card>div.card-act>ul>li:nth-child(2)>a::text').extract()[0]==' 评论':
+            comment=0
+        else:
+            comment=selector.css('div.card>div.card-act>ul>li:nth-child(2)>a::text').extract()[0]
+        if selector.css('div.card>div.card-act>ul>li:nth-child(3)>a>button>span.woo-like-count::text').extract()[0]=='赞':
+            like=0
+        else:
+            like=selector.css('div.card>div.card-act>ul>li:nth-child(3)>a>button>span.woo-like-count::text').extract()[0]
+        userName.append(name)
+        Content.append(content)
+        Share.append(share)
+        Comment.append(comment)
+        Like.append(like)
+    time.sleep(2)
+print(userName,Content,Share,Comment,Like)
+df['用户名']=userName
+df['评论内容']=Content
+df['分享数']=Share
+df['评论数']=Comment
+df['点赞数']=Like
+df.to_excel('唐山打人案宣判.xlsx')

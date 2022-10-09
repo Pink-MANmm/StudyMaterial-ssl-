@@ -1,0 +1,38 @@
+一.WHERE子句
+1.语法
+WHERE子句用于限定选择的标准。在SELECT、UPDATE、DELETE语句中，皆可使用WHERE子句来限定选择的标准
+
+2.可在WHERE子句中使用的运算符
+下面的运算符可在WHERE子句中使用，用来限定选择的标准：
+=        等于
+<>       不等于
+>        大于
+<        小于
+>=       大于等于
+<=       小于等于
+BETWEEN  在某个范围内
+LIKE     搜索某种模式
+注意：在某些版本的SQL中，操作符<>可以写成!=
+
+3.WHERE子句示例
+可以通过WHERE子句来限定SELECT的查询条件
+--查询status为1的所有用户
+SELECT * FROM users WHERE status=1
+--查询id大于2的所有用户
+SELECT * FROM users WHERE id>2
+--查询username不等于admin的所有用户
+SELECT * FROM users WHERE username<>'admin'
+
+二.SQL的AND和OR运算符
+1.语句
+AND和OR可在WHERE子语句中把两个或多个条件结合起来
+AND表示必须同时满足多个条件，相当于JavaScript中的&&运算符，例如if(a!==10 && a!==20)
+OR表示只要满足任意一个条件即可，相当于JavaScript中的||运算符，例如if(a!==10||a!==20)
+
+2.AND运算符示例
+使用AND来显示所有status为0，并且id小于3的用户
+SELECT * FROM users WHERE status=0 AND id<3
+
+3.OR运算符示例
+使用OR来显示所有status为1，或者username为zs的用户
+SELECT * FROM users WHERE status=1 OR username='zs'
