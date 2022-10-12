@@ -516,6 +516,7 @@ body {
 
 #AI_landform {
     position: absolute;
+    display: none;
     margin: 50px 10.55%;
     top: 30px;
     width: 80%;
@@ -577,6 +578,7 @@ body {
 
 #AI_recognize {
     position: absolute;
+    display: none;
     margin: 50px 35.5%;
     top: 0;
     width: 30%;

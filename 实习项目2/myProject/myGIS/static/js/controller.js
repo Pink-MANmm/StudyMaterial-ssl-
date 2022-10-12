@@ -13,6 +13,7 @@ require([
 
   esriConfig.apiKey = "AAPK9f8135a480454ea4b70232ccf6a79b04DEexFeYOe35LNlHDY3w4Kx1ZcFXzRnHsfCa6K3dH9eHIp_ESWxamC0WaKNxqdvLf";
 
+  //1.底图id资源切换
   function changeBasemap(id) {
     const Layer = new WMTSLayer({
       portalItem: {
@@ -29,7 +30,7 @@ require([
     return basemap
   }
 
-  //2D巡查
+  //2.2D巡查功能
   const layer = new TileLayer({
     url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer"
   });
@@ -39,6 +40,8 @@ require([
       layer,
     ]
   });
+
+  //3.2D与3D切换功能
   $('#position').on('click', '#Tog', function () {
     if ($(this).attr('status') == '1') {
       targetWindowMap.basemap = changeBasemap('8dcb11bfabb2493b893e5be933fcea3d')
@@ -51,6 +54,7 @@ require([
     }
   })
 
+  //4.定义目标视图与参照视图
   const targetWindowMap = new Map({
     basemap: toggleBasemap,
     ground: "world-elevation",
@@ -82,7 +86,7 @@ require([
     }
   });
 
-  //1.同步对比功能
+  //5.目标视图与参照视图之间的同步对比功能
 
   referenceWindowView.on(["drag", "mouse-wheel"], function (event) {
     event.stopPropagation()
@@ -104,18 +108,14 @@ require([
     })
   });
 
-  //2.地点搜索功能
+  //6.地点搜索功能
 
   const search = new Search({  //Add Search widget
     view: targetWindowView
   });
   targetWindowView.ui.add(search, "top-right");
-  /*view.watch("center",function(newValue,oldValue,zoom){
-    console.log(zoom + " changed from " + oldValue + "to" + newValue)
-    console.log(oldValue)
-  })*/
 
-  //3.经纬度获取
+  //7.经纬度获取
 
   targetWindowView.on("click", function (e) {
     geom = webMercatorUtils.xyToLngLat(e.mapPoint.x, e.mapPoint.y);
@@ -124,7 +124,7 @@ require([
     $('.pos:eq(2)').val(targetWindowView.zoom)
   });
 
-  //4.年份切换
+  //8.根据年份，切换底图资源
 
   $('body').on('click', '#years .year', function () {
     $(this).addClass('active').siblings().removeClass('active')
@@ -136,41 +136,40 @@ require([
     referenceWindowMap.basemap = changeBasemap($(this).attr('id'))
   })
 
-  //5.截图功能
+  //9.截图功能
 
-  // the button that triggers area selection mode
+  // 触发区域选择模式的按钮
   const screenshotBtn = document.getElementById("screenshotBtn");
 
-  // the orange mask used to select the area
+  // 用于选择区域的橙色蒙板
   const maskDiv = document.getElementById("maskDiv");
 
-  // element where we display the print preview
+  // 用于我们在其中显示打印预览的标签
   const screenshotDiv = document.getElementById("screenshotDiv");
 
-  // the button that triggers download
+  // 下载按钮
   const downloadBtn = document.getElementById("downloadBtn");
 
-  // the button to hide the print preview html element
+  // 用于隐藏打印预览的按钮
   const closeBtn = document.getElementById("closeBtn");
 
-  // replace the navigation elements with screenshot area selection button
-  //view.ui.empty("top-left");
+  //添加截图ui按钮
   targetWindowView.ui.add(screenshotBtn, "bottom-left");
 
-  // add an event listener to trigger the area selection mode
+  // 添加事件监听器以触发区域选择模式
   screenshotBtn.addEventListener("click", () => {
     screenshotBtn.classList.add("active");
     targetWindowView.container.classList.add("screenshotCursor");
     let area = null;
 
-    // listen for drag events and compute the selected area
+    // 监听拖动事件并计算所选区域
     const dragHandler = targetWindowView.on("drag", (event) => {
-      // prevent navigation in the view
+      // 防止事件冒泡
       event.stopPropagation();
 
-      // when the user starts dragging or is dragging
+      // 判断用户是否开始拖动或正在拖动
       if (event.action !== "end") {
-        // calculate the extent of the area selected by dragging the cursor
+        // 通过拖动光标来计算所选区域的范围
         const xmin = clamp(Math.min(event.origin.x, event.x), 0, targetWindowView.width);
         const xmax = clamp(Math.max(event.origin.x, event.x), 0, targetWindowView.width);
         const ymin = clamp(Math.min(event.origin.y, event.y), 0, targetWindowView.height);
@@ -190,19 +189,19 @@ require([
             height: ymax - ymin
           };
         }
-        // set the position of the div element that marks the selected area
+        // 设置标记所选区域的 div 元素的位置
         setMaskPosition(area);
       }
-      // when the user stops dragging
+      // 判断用户是否停止拖动
       else {
-        // remove the drag event listener from the SceneView
+        // 从场景视图中删除拖动事件监听器
         dragHandler.remove();
-        // the screenshot of the selected area is taken
+        // 拍摄所选区域的屏幕截图
         targetWindowView.takeScreenshot({ area: area, format: "png" }).then((screenshot) => {
-          // display a preview of the image
+          // 展示截图预览
           showPreview(screenshot);
 
-          // create the image for download
+          // 创建要下载的图像
           downloadBtn.onclick = () => {
             const text = document.getElementById("textInput").value;
             const Layer = new WMTSLayer({
@@ -210,18 +209,18 @@ require([
                 id: String($('.active').attr('id'))
               }
             })
-            // if a text exists, then add it to the image
+            // 如果存在命名，则添加给截图
             if (text) {
               const dataUrl = getImageWithText(screenshot, text);
               downloadImage(`${text}.png`, dataUrl);
             }
-            // otherwise download only the webscene screenshot
+            // 否则仅下载截图
             else {
               downloadImage(`${Layer.portalItem.title}.png`, screenshot.dataUrl);
             }
           };
 
-          // the screenshot mode is disabled
+          // 屏幕截图模式已禁用
           screenshotBtn.classList.remove("active");
           targetWindowView.container.classList.remove("screenshotCursor");
           setMaskPosition(null);
@@ -246,34 +245,34 @@ require([
     }
   });
 
-  // creates an image that will be appended to the DOM
-  // so that users can have a preview of what they will download
+  // 创建将追加到 DOM 的图像
+  // 以便用户可以预览他们将下载的内容
   function showPreview(screenshot) {
     screenshotDiv.classList.remove("hide");
-    // add the screenshot dataUrl as the src of an image element
+    // 添加屏幕截图数据URL作为图像元素的src
     const screenshotImage = document.getElementsByClassName("js-screenshot-image")[0];
     screenshotImage.width = screenshot.data.width;
     screenshotImage.height = screenshot.data.height;
     screenshotImage.src = screenshot.dataUrl;
   }
 
-  // returns a new image created by adding a custom text to the webscene image
+  // 返回通过向 Web 场景图像添加自定义文本而创建的新图像
   function getImageWithText(screenshot, text) {
     const imageData = screenshot.data;
 
-    // to add the text to the screenshot we create a new canvas element
+    // 要将文本添加到屏幕截图中，我们创建了一个新的画布元素
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     canvas.height = imageData.height;
     canvas.width = imageData.width;
 
-    // add the screenshot data to the canvas
+    // 将屏幕截图数据添加到画布
     context.putImageData(imageData, 0, 0);
     context.font = "20px Arial";
     context.fillStyle = "#000";
     context.fillRect(0, imageData.height - 40, context.measureText(text).width + 20, 30);
 
-    // add the text from the textInput element
+    // 从文本输入标签中添加文本
     context.fillStyle = "#fff";
     context.fillText(text, 10, imageData.height - 20);
 
@@ -281,11 +280,11 @@ require([
   }
 
   function downloadImage(filename, dataUrl) {
-    // the download is handled differently in Microsoft browsers
-    // because the download attribute for <a> elements is not supported
+    // 下载在微软浏览器中的处理方式不同
+    // 因为不支持元素的下载属性<a>
     if (!window.navigator.msSaveOrOpenBlob) {
-      // in browsers that support the download attribute
-      // a link is created and a programmatic click will trigger the download
+      // 在支持下载属性的浏览器中
+      // 创建一个链接，编程单击将触发下载
       const element = document.createElement("a");
       element.setAttribute("href", dataUrl);
       element.setAttribute("download", filename);
@@ -294,7 +293,7 @@ require([
       element.click();
       document.body.removeChild(element);
     } else {
-      // for MS browsers convert dataUrl to Blob
+      // 对于 MS 浏览器，可将数据转换为 Blob
       const byteString = atob(dataUrl.split(",")[1]);
       const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
       const ab = new ArrayBuffer(byteString.length);
@@ -304,18 +303,21 @@ require([
       }
       const blob = new Blob([ab], { type: mimeString });
 
-      // download file
+      // 下载文件
       window.navigator.msSaveOrOpenBlob(blob, filename);
     }
   }
-  // hide the print preview html element on click
+  // 单击时隐藏打印预览 html 元素
   closeBtn.addEventListener("click", () => {
     screenshotDiv.classList.add("hide");
   });
-  //6.界面交互
+
+  //10.登出功能
   $('#logout').on('click', function () {
     location.href = '/'
   })
+
+  //11.获取数据库数据并存储到浏览器的localStorage中
   function getLocaldata() {
     $.ajax({
       url: '/get/',
@@ -336,6 +338,8 @@ require([
     return localStorage.getItem('data')
   }
   let arr = JSON.parse(getLocaldata())
+
+  //12.任务列表发生变动时的更新渲染功能
   function render() {
     $('#missions').empty()
     console.log(arr);
@@ -351,6 +355,8 @@ require([
     $('#1').addClass('act')
   }
   render()
+
+  //13.添加任务中的确认项
   $('.line:eq(3)').on('click', '#add', function () {
     let miss = {
       name: $('#Name').val(),
@@ -379,6 +385,8 @@ require([
       alert('关键内容不能为空')
     }
   })
+
+  //14.添加任务中的取消项
   $('.line:eq(3)').on('click', '#cancel', function () {
     $('#Name').val('')
     $('#Lon').val('')
@@ -386,21 +394,20 @@ require([
     $('#Zoom').val('1')
     $('#option').css('display', 'none')
   })
+
+  //15.单击任务添加按钮，显示添加任务的详细选项
   $('#position').on('click', '#addMission', function () {
     $('#option').css('display', 'block')
   })
 
-  $('#missionList_landform').on('click', '#addMission_landform', function () {
-    $('#option').css('display', 'block')
-  })
-  $('#missionList_identify').on('click', '#addMission_identify', function () {
-    $('#option').css('display', 'block')
-  })
+  //16.管理界面中的删除任务功能
   $('#function').on('click', '#missionList', function (e) {
     if (e.target.className === 'del') {
+      //显示删除任务的确认信息
       $('#del-confirm').css('display', 'block')
-      arr.splice(e.target.id, 1)
+      //确认删除
       $('#del-y').on('click', function () {
+        arr.splice(e.target.id, 1)
         $.ajax({
           url: '/delete/',
           type: 'POST',
@@ -408,15 +415,19 @@ require([
           success: function (data) {
           }
         })
+        //同步删除浏览器localStorage中的任务信息
         localStorage.setItem('data', JSON.stringify(arr))
         render()
         $('#del-confirm').css('display', 'none')
       })
+      //取消删除
       $('#del-n').on('click', function () {
         $('#del-confirm').css('display', 'none')
       })
     }
   })
+
+  //17.任务切换功能（单击不同任务，在视图中显示对应的任务）
   $('#missions').on('click', '.missionName', function () {
     $(this).addClass('act').parents().siblings().children().removeClass('act')
     targetWindowView.center = [parseFloat($(this).attr('lon')), parseFloat($(this).attr('lat'))]
@@ -424,6 +435,8 @@ require([
     referenceWindowView.center = [parseFloat($(this).attr('lon')), parseFloat($(this).attr('lat'))]
     referenceWindowView.zoom = parseInt($(this).attr('zoom'))
   })
+
+  //18.任务管理中的时间戳对比功能
   $('#compare').on('click', function () {
     if (parseInt($(this).attr('status')) == '1') {
       $('#years').css('display', 'block')
@@ -446,8 +459,15 @@ require([
       $('#main').css({ 'margin-right': '170px', 'margin-left': '0' })
       $(this).attr('status', '1')
     }
-
   })
+
+  //19.为导航栏不同功能添加鼠标选中时的交互响应
+  $('.nav').hover(
+    function () { $(this).children('div').css('display', 'block') },
+    function () { $(this).children('div').css('display', 'none') }
+  )
+
+  //20.单击切换至巡查浏览页面
   $('#Browse').on('click', function () {
     $('#AI_landform').css('display', 'none')
     $('#AI_recognize').css('display', 'none')
@@ -474,6 +494,8 @@ require([
       $('#compare').attr('status', '1')
     }
   })
+
+  //21.单击切换至任务管理页面
   $('#Missions').on('click', function () {
     $('#AI_landform').css('display', 'none')
     $('#AI_recognize').css('display', 'none')
@@ -502,12 +524,8 @@ require([
     $('#missions').css('height', '94%')
     $('#compare').css('display', 'block')
   })
-  $('.nav').hover(
-    function () { $(this).children('div').css('display', 'block') },
-    function () { $(this).children('div').css('display', 'none') }
-  )
-  $('#AI_recognize').css('display', 'none')
-  $('#AI_landform').css('display', 'none')
+
+  //22.地貌变化与目标识别详细界面的关闭功能
   $('.close').on('click', function () {
     $(this).parent().animate({
       opacity: 0
@@ -515,6 +533,8 @@ require([
       $(this).css('display', 'none')
     })
   })
+
+  //23.单击切换至地貌变化监测页面
   $('#landform').on('click', function () {
     $('#AI_recognize').css('display', 'none')
     $('#position').css('display', 'none')
@@ -550,6 +570,8 @@ require([
     })
     $('#4').click()
   })
+
+  //24.单击切换至目标对象识别页面
   $('#identify').on('click', function () {
     $('#AI_landform').css('display', 'none')
     $('#position').css('display', 'none')

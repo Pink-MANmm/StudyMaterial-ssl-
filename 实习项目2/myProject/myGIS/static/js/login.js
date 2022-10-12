@@ -20,6 +20,7 @@ $('#enter').on('click', function () {
         }
     })
 })
+//切换至注册页面
 $('#register').on('click', function () {
     $.ajax({
         url: '/register/',
