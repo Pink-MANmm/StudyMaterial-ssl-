@@ -14,13 +14,16 @@ from pymongo import MongoClient
 
 client=MongoClient('mongodb://localhost:27017')
 
+#获取对应国家的总数据条数
 def dbLength(Country):
     return len(client[Country].list_collection_names(session=None))-1
-def getWordsdata(yearData):
+
+#获取对应国家的前80个高频词
+def getWordsdata(countryData):
     stopwords=[i.strip() for i in open('stopwords-master/hit_stopwords.txt',encoding='UTF-8').readlines()]
     Data=[]
     cut_list=[]
-    for i in yearData['title']:
+    for i in countryData['title']:
         Data+=jieba.lcut(''.join(re.findall('[\u4e00-\u9fa5]', i)))
     uniqueData = np.unique(Data)
     for words in uniqueData:
@@ -36,6 +39,8 @@ def getWordsdata(yearData):
         res.append({'name':word,'value':num})
     res.sort(key=operator.itemgetter('value'),reverse=True)
     return res[0:80]
+
+#获取对应国家所有根据时间排序的详细数据（包括时间、标题、连接）以及前80个高频词
 def tableData(Country):
     db = client[Country]
     mycol=db['total']
@@ -51,6 +56,7 @@ def tableData(Country):
     wordsData = getWordsdata(Data)
     return [Data, wordsData]
 
+#获取对应国家指定年份的详细数据以及前80个高频词
 def getYeardata(year,Country):
     db = client[Country]
     mycol = db[year]
@@ -66,14 +72,17 @@ def getYeardata(year,Country):
     wordsData=getWordsdata(Data)
     return [Data,wordsData]
 
+#将热词变化的热词数据初始化为空
 def wordsChange_Init():
-    with open('./static/life-expectancy-table.json', 'w') as r:
+    with open('./static/json/life-expectancy-table.json', 'w') as r:
         json.dump([], r)
     return None
 
+#热词变化功能
 def wordsChange(Country):
     db = client[Country]
     stopwords = [i.strip() for i in open('stopwords-master/hit_stopwords.txt', encoding='UTF-8').readlines()]
+    #获取对应国家指定年份的前11个高频词
     def yearWords(dbData,year):
         Data = []
         cut_list = []
@@ -93,20 +102,24 @@ def wordsChange(Country):
             res.append([num,word,year])
         res.sort(key=lambda x:x[0], reverse=True)
         return res[0:11]
+    
+    #获取对应国家所有年份的前11个高频词
     res=[]
     for i in range(len(db.list_collection_names(session=None))-1):
         dbData=db[str(datetime.now().year-i)].distinct('news_title')
         words=yearWords(dbData,datetime.now().year-i)
         res+=words
 
-    def write_json_data(dict):  # 写入json文件
-        with open('./static/life-expectancy-table.json', 'w') as r:
+    # 写入json文件
+    def write_json_data(dict): 
+        with open('./static/json/life-expectancy-table.json', 'w') as r:
             json.dump(dict, r)
 
     res = list(reversed(res))
     write_json_data(res)
     return  res
 
+#情感判断功能
 def mood_data(Country):
     def select_year():  # 从数据库中获取数据并清洗
         db = client[Country]
@@ -128,8 +141,8 @@ def mood_data(Country):
         return news  # ,type(news)
 
     def mood_judge(titles):  # 情感分数判断
-        with open("./static/not.txt", "r", encoding='utf-8') as nt, open("./static/negative.txt", "r", encoding='utf-8') as ng, open(
-                "./static/positive.txt", "r", encoding='utf-8') as ps:
+        with open("./static/txt/not.txt", "r", encoding='utf-8') as nt, open("./static/txt/negative.txt", "r", encoding='utf-8') as ng, open(
+                "./static/txt/positive.txt", "r", encoding='utf-8') as ps:
             f_nt = nt.read()
             f_ng = ng.read()
             f_ps = ps.read()
