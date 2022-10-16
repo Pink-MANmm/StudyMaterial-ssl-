@@ -466,13 +466,15 @@ require([
     function () { $(this).children('div').css('display', 'block') },
     function () { $(this).children('div').css('display', 'none') }
   )
+  $('#AI_landform').css('display', 'none')
+  $('#AI_recognize').css('display', 'none')
 
   //20.单击切换至巡查浏览页面
   $('#Browse').on('click', function () {
     $('#AI_landform').css('display', 'none')
     $('#AI_recognize').css('display', 'none')
     $('#position').css('display', 'block')
-    $('#content').css('height', '629px')
+    $('#content').css('height', '88%')
     if ($('#Tog').attr('status') == '2') {
       $('#Tog').click()
     }
@@ -500,7 +502,7 @@ require([
     $('#AI_landform').css('display', 'none')
     $('#AI_recognize').css('display', 'none')
     $('#position').css('display', 'none')
-    $('#content').css('height', '668px')
+    $('#content').css('height', '94%')
     if ($('#Tog').attr('status') == '1') {
       $('#Tog').click()
     }
@@ -538,7 +540,7 @@ require([
   $('#landform').on('click', function () {
     $('#AI_recognize').css('display', 'none')
     $('#position').css('display', 'none')
-    $('#content').css('height', '668px')
+    $('#content').css('height', '94%')
     if ($('#Tog').attr('status') == '1') {
       $('#Tog').click()
     }
@@ -575,7 +577,7 @@ require([
   $('#identify').on('click', function () {
     $('#AI_landform').css('display', 'none')
     $('#position').css('display', 'none')
-    $('#content').css('height', '668px')
+    $('#content').css('height', '94%')
     if ($('#Tog').attr('status') == '1') {
       $('#Tog').click()
     }

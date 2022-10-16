@@ -1,4 +1,4 @@
-//参考example-project1
+//参考16-example
 
 //1.案例需求
 //基于MySQL数据库+Express对外提供用户列表的API接口服务。用到的技术点如下：

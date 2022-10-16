@@ -1,0 +1,39 @@
+1.loader概述
+在实际开发过程中，webpack默认只能打包处理以.js后缀名结尾的模块。其他非.js后缀名结尾的模块，
+webpack默认处理不了，需要调用loader加载器才可以正常打包
+
+loader加载器的作用：协助webpack打包处理特定的文件模板。比如：
+*css-loader可以打包处理.css相关的文件
+*less-loader可以打包处理.less相关的文件
+*babel-loader可以打包处理webpack无法处理的高级JS语言
+
+2.打包处理css文件
+①运行npm i style-loader css-loader -D命令，安装处理css文件的loader
+②在webpack.config.js的module->rules数组中，添加loader规则如下：
+module:{//所有第三方文件模块的匹配规则
+    rules:[//文件后缀名的匹配规则
+        {test:/\.css$/,use:['style-loader','css-loader']}
+    ]
+}
+其中，test表示匹配的文件类型，use表示对应要调用的loader
+注意：
+*use数组中指定的loader，顺序是固定的
+*多个loader的调用顺序是：从后往前调用
+
+3.loader调用的过程
+①webpack默认只能打包处理.js结尾的文件，处理不了其他后缀的文件
+②由于代码中包含了index.css这个文件，因此webpack默认处理不了
+③当webpack发现某个文件处理不了的时候，会查找webpack.config.js这个配置文件，看module.rules数组中，是否配置了对应的loader加载器
+④webpack把index.css这个文件，先转交给最后一个loader进行处理(先转交给css-loader)
+⑤当css-loader处理完毕之后，会把处理的结果，转交给下一个loader(转交给style-loader)
+⑥当style-loader处理完毕之后，发现没有下一个loader了，于是就把处理的结果，转交给了webpack
+⑦webpack把style-loader处理的结果，合并到/dist/bundle.js中，最终生成打包好的文件
+
+4.打包处理less文件
+①运行npm i less-loader less -D命令(less为内部依赖项，不在下面引入，即less-loader依赖于less)
+②在webpack.config.js的module->rules数组中，添加loader规则如下：
+module:{
+    rules:[
+        {test:/\.less$/,use:['style-loader','css-loader','less-loader']}
+    ]
+}
