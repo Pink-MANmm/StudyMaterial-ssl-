@@ -1,0 +1,68 @@
+(demo_first)
+1.组件之间的关系
+在项目开发中，组件之间的最常见的关系分为如下两种：
+①父子关系
+②兄弟关系
+
+2.父子组件之间的数据共享
+父子组件之间的数据共享又分为：
+①父->子共享数据
+②子->父共享数据
+
+2.1父组件向子组件共享数据
+父组件向子组件共享数据需要使用自定义属性。示例代码如下;
+//父组件
+<Son :msg="message" :user="userinfo"></Son>
+
+//自定义属性
+data(){
+    return{
+        message:'hello vue.js',
+        userinfo:{name:'zs',age:20}
+    }
+}
+//-----------------------------------------------------
+<template>
+    <div>
+        <h5>Son 组件</h5>
+        <p>父组件传递过来的 msg 值是：{{ msg }}</p>
+        <p>父组件传递过来的 user 值是：{{ user }}</p>
+    </div>
+</template>
+
+props:['msg','user']
+
+2.2子组件向父组件共享数据
+子组件向父组件共享数据使用自定义事件。示例代码如下：
+//子组件
+export default{
+    data(){
+        return{count:0}
+    },
+    methods:{
+        add(){
+            this.count+=1
+            //修改数据时，通过 $emit()触发自定义事件
+            this.$emit('numchange',this.count)
+        }
+    }
+}
+//-----------------------------------------------------
+//父组件
+<Son @numchange="getNewCount"></Son>
+
+export default{
+    data(){
+        return{
+            countFromSon:0
+        }
+    },
+    methods:{
+        getNewCount(val){
+            this.countFromSon=val
+        }
+    }
+}
+
+注意：一旦子组件中触发了add事件，因为调用了$emit同时在父组件中触发$emit自定义的numchage事件，进而
+同步调用父组件中的getNewCount方法并传递子组件中的属性参数

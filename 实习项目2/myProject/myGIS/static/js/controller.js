@@ -524,7 +524,7 @@ require([
       $('#compare').attr('status', '1')
     }
     $('#missions').css('height', '94%')
-    $('#compare').css('display', 'block')
+    $('#compare').css('display', 'flex')
   })
 
   //22.地貌变化与目标识别详细界面的关闭功能
@@ -605,5 +605,35 @@ require([
     }, 100, 'swing', function () {
     })
     $('#3').click()
+  })
+  //25.单击切换到自然景区页面
+  $('#attractions').on('click', function () {
+    $('#AI_landform').css('display', 'none')
+    $('#AI_recognize').css('display', 'none')
+    $('#position').css('display', 'none')
+    $('#content').css('height', '94%')
+    $('#compare').css('display', 'none')
+    if ($('#Tog').attr('status') == '1') {
+      $('#Tog').click()
+    }
+    if ($('#function').attr('status') === '1') {
+      $('#function').css('display', 'block')
+      $('#main').css('margin-right', '170px')
+      $('#function').attr('status', '2')
+    }
+    if ($('#Green').attr('status') === '2') {
+      $('#years').css('display', 'none')
+      $('#years_right').css('display', 'none')
+      $('#referenceWindow1').attr('id', 'referenceWindow')
+      $('#targetWindow1').attr('id', 'targetWindow')
+      $('#main').css({ 'margin-right': '170px', 'margin-left': '0' })
+      $('#Green').attr('status', '1')
+    } else if ($('#Green').attr('status') === '3') {
+      $('#years').css('display', 'none')
+      $('#main').css({ 'margin-right': '170px', 'margin-left': '0' })
+      $('#Green').attr('status', '1')
+    }
+    $('#missions').css('height', '94%')
+    $('#Green').css('display', 'flex')
   })
 });

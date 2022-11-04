@@ -1,0 +1,107 @@
+(demo_first)
+1.什么是组件化开发
+组件化开发指的是：根据封装的思想，把页面上可重用UI结构封装为组件，从而方便项目的开发和维护。
+
+2.vue中的组件化开发
+vue是一个支持组件化开发的前端框架。
+vue中规定：组件的后缀名是.vue。之前接触到的App.vue文件本质上就是一个vue的组件
+
+3.vue组件的三个组成部分
+每个.vue组件都由3部分构成，分别是：
+*template->组件的模板结构
+*script->组件的JavaScript行为
+*style->组件的样式
+
+4.组件之间的父子关系
+组件在被封装好之后，彼此之间是相互独立的，不存在父子关系
+在使用组件的时候，根据彼此的嵌套关系，形成了父子关系、兄弟关系
+
+4.1使用组件的三个步骤
+步骤1：使用import语法导入需要的组件
+import Left from '@/components/Left.vue'
+步骤2：使用components节点注册组件
+export default{
+    components:{
+        Left
+    }
+}
+步骤3：以标签形式使用刚才注册的组件
+<div class="box">
+    <Left></Left>
+</div>
+
+4.2通过components注册的是私有子组件
+例如：
+在组件A的components节点下，注册了组件F。
+则组件F只能用在组件A中；不能被用在组件C中。
+
+4.3注册全局组件
+在vue项目的min.js入口文件中，通过Vue.component()方法，可以注册全局组件。示例代码如下：
+//导入需要全局注册的组件
+import Count from '@/components/Count.vue'
+//参数1：字符串格式，表示组件的"注册名称"
+//参数2：需要被全局注册的那个组件
+Vue.component('MyCount',Count)
+
+5.组件的props
+props是组件的自定义属性，在封装通用组件的时候，合理地使用props可以极大地提高组件的复用性！
+它的语法格式如下：
+export default{
+    //组件的自定义属性
+    props:['自定义属性A','自定义属性B','其它自定义属性...'],
+    //组件的私有数据
+    data(){
+        return{}
+    }
+}
+
+5.1props是只读的
+vue规定：组件中封装的自定义属性是只读的，程序员不能直接修改props的值。否则会直接报错
+要想修改props的值，可以把props的值转存到data中，因为data中的数据都是可读可写的！
+props:['init],
+data(){
+    return {
+        count:this.init//把this.init的值转存到count
+    }
+}
+
+5.2props的default默认值
+在声明自定义属性时，可以通过default来定义属性的默认值。示例代码如下：
+export default{
+    props:{
+        init:{
+            //用default属性定义属性的默认值
+            default:0
+        }
+    }
+}
+
+5.3props的type值类型
+在声明自定义属性时，可以通过type来定义属性的值类型。实例代码如下：
+export default{
+    props:{
+        init:{
+            default:0,
+            //用type属性定义属性的值类型
+            //如果传递过来的值不符合此类型，则会在终端报错
+            type:Number,
+        }
+    }
+}
+
+5.4props的required必填项
+要求调用组件时必须传递参数，否则强制报错
+
+6.组件之间的样式冲突问题
+默认情况下，写在.vue组件中的样式会全局生效，因此很容易造成多个组件之间的样式冲突问题
+
+导致组件之间样式冲突的根本原因是：
+①单页面应用程序中，所有组件的DOM结构，都是基于唯一的index.html页面进行呈现的
+②每个组件中的样式，都会影响整个index.html页面中的DOM元素
+
+6.1思考：如何解决组件样式冲突的问题
+在style标签添加scoped属性，会限制只改变自身style样式
+
+6.2/deep/样式穿透
+当使用第三方组件库的时候（vant），如果有修改组件默认样式的需求，需要用到/deep/
+因为引入的样式标签没有date-v-...，所以要改变样式必须使用/deep/手动添加属性选择date-v-...后在选到要改变的标签([date-v-...] h3)

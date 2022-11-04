@@ -1,0 +1,11 @@
+1.axios是什么
+axios是一个专注于网络请求的库！
+
+2.axios的基本语法如下：
+axios({
+    method:'请求的类型',
+    url:'请求的URL地址',
+}).then((result)=>{
+    //.then用来指定请求成功之后的回调函数
+    //形参中的result是请求成功之后的结果
+})

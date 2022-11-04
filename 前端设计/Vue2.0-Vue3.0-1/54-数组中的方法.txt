@@ -1,0 +1,59 @@
+1.forEach
+forEach循环一旦开始，无法在中间被停止
+const arr=['小红','你大红','苏大强','宝']
+arr.forEach((item,index)=>{
+    console.log('object')
+    if(item==='苏大强'){
+        console.log(index)
+    }
+})
+
+2.some
+const arr=['小红','你大红','苏大强','宝']
+arr.some((item,index)=>{
+    console.log('ok')
+    if(item==='苏大强'){
+        console.log(index)
+        //在找到对应的项之后，可以通过return true固定的语法，来终止some循环
+        return true
+    }
+})
+
+3.every
+const arr=[
+    {id:1,name:'西瓜',status:true,price:10,count:1},
+    {id:1,name:'榴莲',status:false,price:80,count:2},
+    {id:1,name:'草莓',status:true,price:20,count:3},
+]
+//需求：判断数组中，水果是否被全选了
+const result=arr.every(item=>item.state)
+console.log(result)//false
+
+4.reduce
+const arr=[
+    {id:1,name:'西瓜',status:true,price:10,count:1},
+    {id:1,name:'榴莲',status:false,price:80,count:2},
+    {id:1,name:'草莓',status:true,price:20,count:3},
+]
+//需求：把购物车数组中，已勾选的水果，总价累加起来！
+//①普通求法
+let amt=0//总价
+arr.filter(item=>item.state).forEach(item=>{
+    amt+=item.price*item.count
+})
+console.log(amt)
+//--------------------------------------------------
+//②reduce基本求法
+//arr.filter(item=>item.state).reduce((累加的结果,当前循环项)=>{  },初始值)
+const result=arr.filter(item=>item.state).reduce((amt,item)=>{
+    return amt+=item.price*item.count
+},0)
+console.log(result)
+//--------------------------------------------------
+//③reduce简化求法
+const result=arr.filter(item=>item.state).reduce((amt,item)=>amt+=item.price*item.count,0)
+console.log(result)
+const result=arr.filter(item=>item.state).reduce((amt.item)=>{
+    amt+=item.price*item.count
+},0)
+

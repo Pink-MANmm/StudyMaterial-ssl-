@@ -1,0 +1,15 @@
+(demo_first)
+1.生命周期&生命周期函数
+生命周期（Life Cycle）是指一个组件从创建->运行->销毁的整个阶段，强调的是一个时间段
+生命周期函数：是由vue框架提供的内置函数，会伴随着组件的生命周期，自动按次序执行。
+
+注意：生命周期强调的是时间段，生命周期函数强调的是时间点
+
+2.组件生命周期函数分类
+组件创建阶段（组件生命周期的第1个阶段）：new Vue()->beforeCreate->created(存在于内存中)->beforeMount->mounted(已渲染)
+组件运行阶段（组件生命周期的第2个阶段）：beforeUpdate->updated
+组件销毁阶段（组件生命周期的第3个阶段）：beforeDestroy->destroyed
+
+3.生命周期图示
+可以参考vue官方文档给出的"生命周期图示"，进一步理解组件生命周期执行的过程：
+https://cn.vuejs.org/v2/guide/instance.html#生命周期图示

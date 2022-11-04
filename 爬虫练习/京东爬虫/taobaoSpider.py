@@ -34,7 +34,8 @@ def Spider(productID,score,productName):
     content=[]
     voteCount=[]
     VIP=[]
-    for page in range(50):
+    Date=[]
+    for page in range(1000):
         print(page)
         if page==0:
             url='https://club.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98&productId='+str(productID)+'&score='+str(score)+'&sortType=5&page='+str(page)+'&pageSize=10&isShadowSku=0&fold=1'
@@ -48,19 +49,22 @@ def Spider(productID,score,productName):
         for comment in comments:
             cont=comment['content']
             vote=comment['usefulVoteCount']
+            date=comment['creationTime']
             if comment['plusAvailable']==201:
                 vip='PLUS会员'
             else:
                 vip='普通用户'
-            print(cont +'/'+ str(vote) +'/'+ vip+'/'+str(comment['plusAvailable']))
+            print(cont +'/'+ str(vote) +'/'+ vip+'/'+str(comment['plusAvailable'])+'/'+str(comment['creationTime']))
             content.append(cont)
             voteCount.append(vote)
             VIP.append(vip)
-        time.sleep(random.randint(5,10))
+            Date.append(date)
+        time.sleep(random.randint(1,3))
     df['内容']=content
     df['点赞']=voteCount
     df['会员状态']=VIP
+    df['日期']=Date
     df.to_excel(str(productName)+'.xlsx')
-Spider(100036702080,1,'范思哲(VERSACE)香水心形礼盒--差评')
-Spider(100036702080,2,'范思哲(VERSACE)香水心形礼盒--中评')
-Spider(100036702080,3,'范思哲(VERSACE)香水心形礼盒--好评')
+Spider(259348,1,'迪奥Dior真我香氛/女士香水100ml--差评')
+Spider(259348,2,'迪奥Dior真我香氛/女士香水100ml--中评')
+Spider(259348,3,'迪奥Dior真我香氛/女士香水100ml--好评')

@@ -1,0 +1,38 @@
+1.什么是watch侦听器
+watch侦听器允许开发者监视数据的变化，从而针对数据的变化做特定的操作。
+语法格式如下：
+const vm=new Vue({
+    el:'#app',
+    data:{username:''},
+    watch:{
+        //监听username值的变化
+        //newVal是"变化后的新值"，oldVal是"变化前的旧值"
+        username(newVal,oldVal){
+            console.log(newVal,oldVal)
+        }
+    },
+})
+
+2.使用watch检测用户名是否可用
+监听username值的变化，并使用axios发起Ajax请求，检测当前输入的用户名是否可用：
+watch:{
+    //监听username值的变化
+    async username(newVal){
+        if(newVal==='')return
+        //使用axios发起请求，判断用户名是否可用
+        const{data:res}=await axios.get('https://www.escook.cn/api/finduser/' + newVal)
+        console.log(res)
+    }
+}
+3.侦听器的格式：
+①方法格式的侦听器：
+*缺点1：无法在刚进入页面的时候，自动触发！！
+*缺点2：如果侦听的是对象，如果对象中的属性发生了变化，不会触发侦听器！！
+②对象格式的侦听器
+*好处1：可以通过immediate选项，让侦听器自动触发！！
+*好处2：可以通过deep选项，让侦听器深度侦听对象中每个属性的变化！！
+
+3.如果要侦听的是对象的子属性的变化，则必须包裹一层单引号
+'info.username'(newVal, oldVal) {
+    console.log(newVal, oldVal);
+}

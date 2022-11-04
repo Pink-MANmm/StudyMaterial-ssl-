@@ -1,0 +1,59 @@
+1.过滤器（仅可在vue2.x中使用，vue3.x已删除）
+过滤器（Filters）是vue为开发者提供的功能，常用于文本的格式化。过滤器可以用在两个地方：插值表达式和v-bind属性绑定。
+过滤器应该被添加在JavaScript表达式的尾部，由"管道符"进行调用，示例代码如下：
+<!-- 在双花括号中通过"管道符"调用capitalize过滤器，对message的值进行格式化 -->
+<p>{{ message | capitalize }}</p>
+
+<!-- 在v-bind中通过"管道符"调用formatId过滤器，对rawId的值进行格式化 -->
+<div v-bind:id="rawId | formatId"></div>
+
+注意点：
+①要定义到filters节点下，本质是一个函数
+②在过滤器函数中，一定要有return值
+③在过滤器的形参中，就可以获取到"管道符"前面待处理的那个值
+
+2.私有过滤器和全局过滤器
+在filters节点下定义的过滤器，成为"私有过滤器"，因为它只能在当前vm实例所控制的el区域内使用。如果希望在多个vue实例之间共享过滤器，则可以按照如下的格式定义全局过滤器
+
+//全局过滤器 - 独立于每个vm实例之外
+//Vue.filter()方法接收两个参数
+//  第一个参数：是全局过滤器的"名字"
+//  第二个参数：是全局过滤器的"处理函数"
+Vue.filter('capitalize',(str)=>{
+    return str.charAt(0).toUpperCase()+str.sllice(1)+'--'
+})
+
+注意:如果全局过滤器和私有过滤器名字一致，此时按照"就近原则"，调用的是"私有过滤器"
+
+3.Day.js
+Day.js中文网（dayjs.fenxianglu.cn）：Day.js是一个极简的JavaScript库，可以为现代浏览器解析、验证、操作和显示日期和时间
+示例：dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+
+4.连续调用多个过滤器
+过滤器可以串联地进行调用，例如：
+<!-- 把message的值，交给filterA进行处理 -->
+<!-- 把filterA处理的结果，再交给filterB进行处理 -->
+<!-- 最终把filterB处理的结果，作为最终的值渲染到页面上 -->
+{{ message | filterA | filterB }}
+
+4.过滤器传参
+过滤器的本质是JavaScript函数，因此可以接收参数，格式如下：
+<!-- arg1 和 arg2 是传递给filterA的参数 -->
+<p>{{ message | filterA(arg1,arg2)}}</p>
+
+//过滤器处理函数的形参列表中
+//  第一个参数：永远都是"管道符"前面待处理的那个值
+//  从第二个参数开始，才是调用过滤器时传递过来的arg1和arg2参数
+Vue.filter('filterA',(msg,arg1,arg2)=>{
+    //过滤器的代码逻辑...
+})
+
+5.过滤器的兼容性
+过滤器仅在vue2.x和vue1.x中受支持，在vue3.x的版本中删除了过滤器相关的功能。
+
+在企业级项目开发中：
+*如果使用的是2.x版本的vue，则依然可以使用过滤器相关的功能
+*如果项目已经升级到了3.x版本的vue，官方建议使用计算属性或方法代替被删除的过滤器功能
+
+具体的迁移指南，请参考vue 3.x的官方文档给出的说明：
+https://v3.vuejs.org/guide/migration/filters.html#migration-strategy

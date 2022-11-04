@@ -1,0 +1,29 @@
+1.基本使用步骤
+①导入vue.js的script脚本文件
+②在页面中声明一个将要被vue所控制的DOM区域
+③创建VM实例对象（vue实例对象）
+
+<body>
+    <!-- 2.在页面中声明一个将要被vue所控制的DOM区域 -->
+    <div id='app'>{{username}}</div>
+    <!-- 1.导入vue.js的script脚本文件 -->
+    <script src="./lib/vue-2.6.12.js"></script>
+    <script>
+        //3.创建vm实例对象（vue实例对象）
+        const vm=new Vue({
+            //3.1 指定当前vm实例对象（vue实例对象）
+            el:'#app',
+            //3.2 指定Model数据源
+            data:{
+                username:'zs'
+            }
+        })
+    <script>
+</body>
+
+2.配置Chrome浏览器中的vue-devtools
+点击Chrome浏览器右上角的（竖着三个点）按钮，选择 更多工具->扩展程序->Vue.js devtools详细信息，并勾选如下两个选项：
+①允许此扩展程序读取和更改您在所访问的网站上留存的所有数据：  在所有网站上
+②允许访问文件网址： on
+
+注意：vue-devtools只允许在开发环境中使用，引入的scripts文件应当为vue.js而不是vue.min.js

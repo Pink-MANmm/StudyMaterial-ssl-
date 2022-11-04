@@ -1,0 +1,76 @@
+1.什么是自定义指令
+vue官方提供了v-text、v-for、v-model、v-if等常用的指令。除此之外vue还允许开发者自定义指令
+
+2.自定义指令的分类
+vue中的自定义指令分为两类，分别是
+*私有自定义指令
+*全局自定义指令
+
+3.私有自定义指令
+在每个vue组件中，可以在directives节点下声明私有自定义指令。示例代码如下：
+<div v-color>测试</div>
+
+directives:{
+    color:{
+        //当指令第一次被绑定到元素上的时候，会立即触发bind函数
+        //形参中的el表示当前指令绑定到的那个DOM对象
+        //为绑定到的HTML元素设置红色的文字
+        bind(el){
+            //形参中的el是绑定了此指令的、原生的DOM对象
+            el.style.color='red'
+        }
+    }
+}
+
+4.使用binding.value获取指令绑定的值
+<div v-color="color">测试</div>
+<div v-color="'red'">测试</div>
+
+data(){
+    return{
+        color:red
+    }
+},
+directives:{
+    color:{
+        //当指令第一次被绑定到元素上的时候，会立即触发bind函数（页面数据发生更新，不会触发函数）
+        //形参中的el表示当前指令绑定到的那个DOM对象
+        //为绑定到的HTML元素设置红色的文字
+        bind(el,binding){
+            //形参中的el是绑定了此指令的、原生的DOM对象
+            el.style.color=binding.value
+        }
+    }
+}
+
+5.update函数
+bind函数只调用1次：当指令第一次绑定到元素时调用，当DOM更新时bind函数不会被触发。update函数会在每次DOM更新时被调用。示例代码如下：
+directives:{
+    color:{
+        //当指令第一次被绑定到元素时被调用
+        bind(el,binding){
+            el.style.color=binding.value
+        },
+        //每次DOM更新时被调用
+        update(el,binding){
+            el.style.color=binding.value
+        }
+    }
+}
+
+6.函数简写
+如果bind和update函数中的逻辑完全相同，则对象格式的自定义指令可以简写成函数格式：
+directives:{
+    //在insert和update时，会触发相同的业务逻辑
+    color(el,binding){
+        el.style.color=binding.value
+    }
+}
+
+7.全局自定义指令
+全局共享的自定义指令需要通过"Vue.directive()"进行声明，示例代码如下：
+//参数1：字符串，表示全局自定义指令的名字
+//参数2：对象，用来接收指令的参数值
+Vue.directive('color',function(el,binding){
+    el.style.color=binding.value
+})

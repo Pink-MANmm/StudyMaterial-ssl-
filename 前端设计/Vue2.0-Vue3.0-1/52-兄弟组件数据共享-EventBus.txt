@@ -1,0 +1,47 @@
+(demo_first)
+1.兄弟组件之间的数据共享
+在Vue2.x中，兄弟组件之间数据共享的方案是EventBus
+//兄弟组件A（数据发送方）
+import bus from './eventBus.js'
+
+export default{
+    data(){
+        return{
+            msg:'hello vue.js'
+        }
+    },
+    methods:{
+        sendMsg(){
+            bus.$emit('share',this.msg)
+        }
+    }
+}
+//-----------------------------------
+//eventBus.js
+import Vue from 'vue'
+//向外共享Vue的实例对象
+export default new Vue()
+//-----------------------------------
+//兄弟组件B（数据接收方）
+import bus from './eventBus.js'
+
+export default{
+    data(){
+        return{
+            msgFromLeft:''
+        }
+    },
+    created(){
+        //为bus绑定并监听share事件
+        bus.$on('share',val=>{
+            this.msgFromLeft=val
+        })
+    }
+}
+
+//注意：在A中触发sendMsg事件后，会在B中触发share事件并传递参数
+
+EventBus的使用步骤
+①创建eventBus.js模块，并向外共享一个Vue的实例对象
+②在数据发送方，调用bus.$emit('事件名称'，要发送的数据)方法触发自定义事件
+③在数据接收方，调用bus.$on('事件名称'，事件处理函数)方法注册一个自定义事件

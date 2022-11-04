@@ -1,0 +1,170 @@
+1.指令的概念
+指令（Directives）是vue为开发者提供的模板语法，用于辅助开发者渲染页面的基本结构
+
+vue中的指令按照不同的用途可以分为如下6大类：
+①内容渲染指令
+②属性绑定指令
+③事件绑定指令
+④双向绑定指令
+⑤条件渲染指令
+⑥列表渲染指令
+
+注意：指令是vue开发中最基础、最常用、最简单的知识点
+
+1.1内容渲染指令
+内容渲染指令用来辅助开发者渲染DOM元素的文本内容。常用的内容渲染指令有如下3个：
+①v-text
+②{{}}
+③v-html
+
+①v-text
+用法示例：
+<!-- 把username对应的值，渲染到第一个p标签中 -->
+<p v-text="username"></p>
+
+<!-- 把gender对应的值，渲染到第二个p标签中 -->
+<!-- 注意：第二个p标签中，默认的文本"性别"会被gender的值覆盖掉 -->
+<p v-text="gender">性别</p>
+注意：v-text指令会覆盖元素内默认的值
+
+②{{}}
+vue提供的{{}}语法，专门用来解决v-text会覆盖默认文本内容的问题。这种{{}}语法的专业名称是插值表达式（英文名为Mustache）
+<!-- 使用{{}}插值表达式，将对应的值渲染到元素的内容节点中 -->
+<!-- 同时保留元素自身的默认值 -->
+<p>姓名：{{username}}</p>
+<p>性别：{{gender}}</p>
+注意：插值表达式只能用在元素的内容节点中，不能用在元素的属性节点中！
+
+③v-html
+v-text指令和插值表达式只能渲染纯文本内容。如果要把包含HTML标签的字符串渲染为页面的HTML元素，则需要用到v-html这个指令
+<!-- 假设data中定义了名为info的数据，数据的值为包含HTML标签的字符串 -->
+<!-- '<h4 style="color:red;font-weight:bold;">欢迎大家来学习vue.js</h4>' -->
+<p v-html="info"></p>
+
+1.2属性绑定指令
+如果需要为元素的属性动态绑定属性值，则需要v-bind属性绑定指令
+vue固定v-bind:指令可以简写为:
+
+1.2.1使用javascript表达式
+在vue提供的模板渲染语法中，除了支持绑定简单的数据值之外，还支持JavaScript表达式的运算，例如：
+{{number+1}}
+{{ok?'YES' : 'NO'}}
+{{message.split('').reverse().join()}}
+
+<div v-bind:id="'list-'+id"></div>
+
+1.3事件绑定指令
+vue提供了v-on事件绑定指令，用来辅助程序员为DOM元素绑定事件监听。语法格式如下：
+<h3>count的值为：{{count}}</h3>
+<!-- 语法格式为v-on：事件名称="事件处理函数的名称" -->
+<button v-on:click="add">+1</button>
+注意：原生DOM对象有onclick、oninput、onkeyup等原生事件，替换为vue的事件绑定形式后，分别为：v-on:click、v-on:input、v-on:keyup
+v-on:可以简写为@
+
+1.3.1事件对象$event
+当事件不传参数时add，methods对象下的add(e)中的e即为事件对象
+同时传递参数n和事件对象时，应为add(n,e)
+vue提供了内置变量，名字叫做$event，他就是原生DOM的事件对象e
+
+1.3.2事件修饰符
+在事件处理函数中调用event.preventDefault()或event.stopPropagation()是非常常见的需求。因此，vue提供了事件修饰符的概念，来辅助程序员更方便的对事件的触发进行控制。
+常见的5个事件修饰符如下：
+.prevent 阻止默认行为（例如：阻止a链接的跳转、阻止表单的提交等）
+.stop    阻止事件冒泡
+.capture 以捕获模式触发当前的事件处理函数
+.once    绑定的事件只触发1次
+.self    只有在event.target是当前元素自身时触发事件处理函数
+
+1.3.3按键修饰符
+在监听键盘事件时，我们经常需要判断详细的按键。此时，可以为按键相关的事件添加按键修饰符，例如：
+<!-- 只有在'key'是'Enter'时调用'vm.submit()' -->
+<input @keyup.enter="submit">
+<!-- 只有在'key'是'Esc'时调用'vm.clearInput()' -->
+<input @keyup.esc="clearInput">
+
+1.4双向绑定指令
+vue提供了v-model双向数据绑定指令，用来辅助开发者在不操作DOM的前提下，快速获取表单的数据
+<p>用户名是：{{username}}</p>
+<input type="text" v-model="usernme" />
+
+<p>选中的省份是：{{province}}</p>
+<select v-model="province">
+    <option value="">请选择</option>
+    <option value="1">北京</option>
+    <option value="2">河北</option>
+    <option value="3">黑龙江</option>
+
+注意：只能用于input输入框（type="radio",type="checkbox",type="xxxx"）、textarea、select
+
+1.4.1 v-model指令的修饰符
+为了方便对用户输入的内容进行处理，vue为v-model指令提供了3个修饰符，分别是：
+.number 自动将用户的输入值转为数值类型  <input v-model.number="age"/>
+.trim   自动过滤用户输入的首尾空白字符  <input v-model.trim="msg"/>
+.lazy   在"change"时而非"input"时更新  <input v-model.lazy="msg"/>
+示例用法如下：
+<input type="text" v-model.number="n1" /> +
+<input type="text" v-model.number="n2" /> =
+<span>{{n1+n2}}</span>
+
+1.5条件渲染指令
+条件渲染指令用来辅助开发者按需控制DOM的显示与隐藏。条件渲染指令有如下两个，分别是：
+*v-if
+*v-show
+
+<div id="app">
+    <p v-if="networkState===200">请求成功 --- 被 v-if 控制</p>
+    <p v-show="networkState===200">请求成功 --- 被 v-show 控制</p>
+</div>
+
+v-show的原理：动态为元素添加或移除display：none样式，来实现元素的显示和隐藏
+*如果要频繁的切换元素的显示状态，用v-show性能会更好
+v-if的原理：每次动态创建或移除元素，实现元素的显示和隐藏
+*如果刚进入页面的时候，某些元素默认不需要被展示，而且后期很可能也不需要被展示出来，此时v-if的性能更好
+注意：实际开发中，绝大多数情况下，不用考虑性能问题，直接使用v-if就好了！
+
+1.5.1 v-if配套的指令
+v-else
+v-if可以单独使用，或配合v-else指令一起使用：
+<div v-if="Math.random() > 0.5">
+    随机数大于0.5
+</div>
+<div v-else>
+    随机数小于或等于0.5
+</div>
+
+v-else-if
+v-else-if指令，顾名思义，充当v-if的"else-if块"，可以连续使用：
+<div v-if="type === A">优秀</div>
+<div v-else-if="type === B">良好</div>
+<div v-else-if="type === C">一般</div>
+<div v-else>差</div>
+注意：v-else-if指令必须配合v-if指令一起使用，否则它将不会被识别
+
+1.6列表渲染指令
+vue提供了v-for列表渲染指令，用来辅助开发者基于一个数组来循环渲染一个列表结构。v-for指令需要使用item in items形式的特殊语法，其中：
+*items是待循环的数组
+*item是被循环的每一项
+data:{
+    list:[
+        {id:1,name:'zs'},
+        {id:2,name:'ls'}
+    ]
+}
+//---------分割线----------
+<ul>
+    <li v-for="item in list">姓名是：{{item.name}}</li>
+</ul>
+
+v-for中的索引
+v-for指令还支持一个可选的第二个参数，即当前项的索引。语法格式为(item,index)in items.示例代码如下：
+<ul>
+    <li v-for="(item,index) in list">索引是：{{index}},姓名是：{{item.name}}</li>
+</ul>
+注意：v-for指令中的item项和index索引都是形参，可以根据需要进行重命名。例如(user,i)in userlist
+
+key的注意事项：
+①key的值只能是字符串或数字类型
+②key的值必须具有唯一性（即：key的值不能重复）
+③建议把数据项id属性的值作为key的值（因为id属性的值具有唯一性）
+④使用index的值当做key的值没有任何意义（因为index的值不具有唯一性，与每一项不具有强对应关系）
+⑤建议使用v-for指令时一定要指定key的值（既提升性能、又防止列表状态紊乱）

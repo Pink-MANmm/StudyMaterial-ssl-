@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 2.在页面中声明一个将要被vue所控制的DOM区域 -->
+    <div id="app">
+        <input type="text" v-model.number="n1">+<input type="text" v-model.number="n2">=<span>{{n1+n2}}</span>
+        <hr>
+        <input type="text" v-model.trim="username">
+        <button @click="showName">获取用户名</button>
+        <hr>
+        <input type="text" v-model.lazy="username">
+    </div>
+
+    <!-- 1.导入vue.js的script脚本文件 -->
+    <script src="./vue2.7.10/vue.js"></script>
+    <script>
+        //3.创建vm实例对象（vue实例对象）
+        const vm = new Vue({
+            //3.1指定当前vue实例要控制页面的哪个区域
+            el: '#app',
+            //3.2指定Model数据源
+            data: {
+                username: 'zhangsan',
+                n1: 1,
+                n2: 2
+            },
+            //methods的作用，就是定义事件的处理函数
+            methods: {
+                showName() {
+                    console.log(`用户名是:"${this.username}`);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

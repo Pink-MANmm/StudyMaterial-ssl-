@@ -1,0 +1,49 @@
+(demo_second)
+jquery优势：简化了程序员操作DOM的过程
+vue优势：MVVM 在vue中，程序员不需要使用DOM，程序员只需要把数据维护好即可！（数据驱动视图）
+结论：在vue项目，强烈不建议大家安装和使用jQuery！
+
+假设：在vue中，需要操作DOM了，需要拿到页面上某个DOM元素的引用，此时怎么办？
+
+1.什么是ref引用
+ref用来辅助开发者在不依赖于jQuery的情况下，获取DOM元素或组件的引用。
+每个vue的组件实例上，都包含一个$refs对象，里面存储着对应的DOM元素或组件的引用。默认情况下，
+组件的$refs指向一个空对象
+
+2.ref引用DOM对象
+<div class="app-container">
+    <h1 ref="myh1">APP根组件</h1>
+    <button @click="showThis">打印this</button>
+    <hr />
+    <div class="box">
+      <!-- 渲染Left组件和Right组件 -->
+    </div>
+</div>
+//----------------------------------------------------
+export default {
+  methods: {
+    showThis() {
+      //当前APP组件的实例对象
+      this.$refs.myh1.style.color = "red";
+    },
+  },
+};
+
+3.使用ref引用组件实例
+如果想要使用ref引用页面上的组件实例，则可以按照如下的方式进行操作：
+<!-- 使用ref属性，为对应的"组件"添加引用名称 -->
+<my-counter ref="counterRef"></my-counter>
+<button @click="getRef">获取$refs引用</button>
+
+methods:{
+    getRef(){
+        //通过this.$refs.引用的名称  可以引用组件的实例
+        console.log(this.$refs.counterRef)
+        //引用到组件的实例之后，就可以调用组件上的methods方法
+        this.$refs.counterRef.add()
+    }
+}
+
+4.this.$nextTick(cb)方法
+组件的$nextTick(cb)方法，会把cb回调推迟到下一个DOM更新周期之后执行。通俗的理解是：等组件的
+DOM更新完成之后，再执行cb回调函数。从而能保证cb回调函数可以操作到最新的DOM元素。
