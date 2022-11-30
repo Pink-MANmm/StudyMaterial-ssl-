@@ -1,0 +1,47 @@
+1.以数组语法绑定HTML的class
+如果元素需要动态绑定多个class的类名，此时可以使用数组的语法格式：
+<h3 class="thin" :class="[isItalic ? 'italic' : '',isDelete ? 'delete' : '']">
+    MyDeep组件
+</h3>
+
+<button @click="isItalic=!isItalic">Toggle Italic</button>
+<button @click="isDelete=!isDelete">Toggle Delete</button>
+
+data(){
+    return {
+        isItalic:true,
+        isDelete:false
+    }
+}
+
+2.以对象语法绑定HTML的class
+使用数组语法动态绑定class会导致模板结构臃肿的问题。此时可以使用对象语法进行简化：
+<h3 class="thin" :class="classObj">MyDeep 组件</h3>
+<button @click="classObj.italic = !classObj.italic">Toggle Italic</button>
+<button @click="classObj.delete = !classObj.delete">Toggle Delete</button>
+
+data(){
+    return {
+        classObj:{//对象中，属性名是class类名，值是布尔值
+            italic:true,
+            delete:false
+        }
+    }
+}
+
+3.以对象语法绑定内联的style
+:style的对象语法十分直观---看着非常像CSS，但其实是一个JavaScript对象。CSS property名可以用驼峰式（camelCase）或短横线分隔（kebab-case，记得用引号括起来）来命名：
+(若不写为backgroundColor则要加单引号写作'background-color'表示为字符串格式)
+<div :style="{color: active, fontSize: fsize + 'px', 'background-color': bgcolor}">
+    黑马程序员
+</div>
+<button @click="fsize += 1">学号 +1</button>
+<button @click="fsize -= 1">学号 -1</button>
+
+data(){
+    return {
+        active:'red',
+        fsize:30,
+        bgcolor:'pink',
+    }
+}

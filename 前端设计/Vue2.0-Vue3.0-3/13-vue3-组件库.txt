@@ -1,0 +1,84 @@
+1.什么是vue组件库
+在实际开发中，前端开发者可以把自己封装的.vue组件整理、打包、并发布为npm的包，从而供其他人下载和使用。这种可以直接下载并在项目中使用的现成组件，就叫做vue组件库
+
+2.vue组件库和bootstrap的区别
+二者之间存在本质的区别：
+*bootstrap只提供了纯粹的原材料（css样式、HTML结构以及JS特效），需要由开发者做进一步的组装和改造
+*vue组件库是遵循vue语法、高度定制的现成组件，开箱即用
+
+3.最常用的vue组件库
+①PC端
+*Element UI（https://element.eleme.cn/#/zh-CN）
+*View UI（http://v1.iviewui.com）
+②移动端
+*Mint UI（http://mint-ui.github.io/#!/zh-cn）
+*Vant（https://vant-contrib.gitee.io/vant/#/zh-CN）
+
+4.Element UI
+Element UI是饿了么前端团队开源的一套PC端vue组件库。支持在vue2和vue3的项目中使用：
+*vue2的项目使用旧版的Element UI(https://element.eleme.cn/#/zh-CN)
+*vue3的项目使用新版的Element Plus(https://element-plus.gitee.io/#/zh-CN)
+
+4.1.在vue2的项目中安装element-ui
+运行如下的终端命令：
+npm i element-ui -S
+
+4.2.引入element-ui
+开发者可以一次性完整引入所有的element.ui组件，或是根据需求，只按需引入用到的element-ui组件：
+*完整引入：操作简单，但是会额外引入一些用不到的组件，导致项目体积过大
+*按需引入：操作相对复杂一些，但是只会引入用到的组件，能起到优化项目体积的目的
+
+4.3.完整引入
+在main.js中写入以下内容：
+//1.完整引入element ui的组件
+import ElementUI from 'element-ui'
+//2.导入element ui组件的样式
+import 'element-ui/lib/theme-chalk/index.css'
+
+//3.把ElementUI 注册为vue的插件【注册之后，即可在每个组件中直接使用每一个element ui的组件】
+Vue.use(ElementUI)
+
+4.4.按需引入
+借助babel-plugin-component，我们可以只引入需要的组件，以达到减小项目体积的目的。
+步骤1，安装babel-plugin-component:
+npm install babel-plugin-component
+
+步骤2，修改根目录下的babel.config.js配置文件，新增plugins节点如下：
+module.exports={
+    presets:['@vue/cli-plugin-babel/preset'],
+    // ↓ ↓ ↓
+    plugins:[
+        [
+            'component',
+            {
+                libraryName:'element-ui',
+                styleLibraryName:'theme-chalk',
+            }
+        ]
+    ]
+    // ↑ ↑ ↑
+}
+
+步骤3：如果你只希望引入部分组件，比如Button，那么需要在main.js中写入以下内容：
+//1.按需导入element ui的组件
+import { Button } from 'element-ui'
+
+//2.注册需要的组件
+Vue.component(Button.name,Button)
+/*或写为
+*Vue.use(Button)
+*/
+
+4.5.把组件的导入和注册封装为独立的模块
+在src目录下新建element-ui/index.js模块，并声明如下的代码：
+// → 模块路径 /src/element-ui/index.js
+import Vue from 'vue'
+//按需导入element ui的组件
+import { Button,Input } from 'element-ui'
+
+//注册需要的组件
+Vue.use(Button)
+Vue.use(Input)
+
+// → 在main.js中导入
+import './element-ui'

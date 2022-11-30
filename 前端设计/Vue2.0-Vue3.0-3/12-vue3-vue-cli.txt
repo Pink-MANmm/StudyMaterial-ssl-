@@ -1,0 +1,131 @@
+1.什么是vue-cli
+vue-cli（俗称：vue脚手架）是vue官方提供的、快速生成vue工程化项目的工具。
+特点:
+①开箱即用
+②基于webpack
+③功能丰富且易于扩展
+④支持创建vue2和vue3的项目
+
+2.安装vue-cli
+vue-cli是基于Node.js开发出来的工具，因此需要使用npm将它安装为全局可用的工具：
+#全局安装vue-cli
+npm install -g @vue/cli 
+#查看vue-cli的版本，体验vue-cli是否安装成功
+vue --version
+
+2.1.解决Windows PowerShell不识别vue命令的问题
+默认情况下，在PowerShell中执行vue --version命令会提示错误消息
+解决方案如下：
+①以管理员身份运行PowerShell
+②执行set-ExecutionPolicy RemoteSigned命令
+③输入字符Y，回车即可
+
+3.创建项目
+vue-cli提供了创建项目的两种方式
+#基于【命令行】的方式创建vue项目
+vue create 项目名称
+#OR
+#基于【可视化面板】创建vue项目
+vue ui
+
+4.基于vue ui创建vue项目
+步骤1：在终端下运行vue ui命令，自动在浏览器中打开创建项目的可视化面板：
+①创建
+②在此创建新项目
+
+步骤2：在详情页面填写项目名称：
+①填写项目名称
+②下一步
+
+步骤3：在预设页面选择手动配置项目：
+①手动
+②下一步
+
+步骤4：在功能页面勾选需要安装的功能（Choosse Vue Version、Babel、CSS预处理器、使用配置文件）
+
+步骤5：在配置页面勾选vue的版本号和需要的预处理器
+①2.x
+②Less
+③创建项目
+
+步骤6：将刚才所有的配置保存为预设（模板），方便下一次创建项目时直接复用之前的配置：
+①填写预设名称
+②保存预设并创建项目
+
+步骤7：创建项目并自动安装依赖包
+
+vue ui的本质：通过可视化的面板采集到用户的配置信息后，在后台基于命令行的方式自动初始化项目：
+预设存储到了.vuerc配置文件中
+
+项目创建完成后，自动进入项目仪表盘
+
+5.基于命令行创建vue项目
+步骤1：在终端下运行vue create demo2命令，基于交互式的命令行创建vue的项目
+
+步骤2：选择要安装的功能
+
+步骤3：使用上下箭头选择vue的版本，并使用回车键确认选择：
+
+步骤4：使用上下箭头选择要使用的css预处理器，并使用回车键确认选择
+
+步骤5：使用上下箭头选择如何存储插件的配置信息，并使用回车键确认选择：
+
+步骤6：是否将刚才的配置保存为预设
+
+步骤7：选择如何安装项目中的依赖包
+
+步骤8：开始创建项目并自动安装依赖包
+
+步骤9：项目创建完成
+
+6.梳理vue2项目的基本结构
+主要的文件：
+src -> App.vue
+src -> main.js
+
+7.在vue2的项目中使用路由
+在vue2的项目中，只能安装并使用3.x版本的vue-router。
+版本3和版本4的路由最主要的区别：创建路由模块的方式不同
+
+7.1.回顾：4.x版本的路由如何创建路由模块
+import { createRouter,createWebHashHistory } from 'vue-router' //1.按需导入需要的方法
+
+import MyHome from './Home.vue'                                //2.导入需要使用路由进行切换的组件
+import MyMovie from './Movie.vue'
+
+const router = createRouter({                                  //3.创建路由对象
+    history: createWebHashHistory(),                           //3.1.指定通过hash管理路由的切换
+    routes: [                                                  //3.2.创建路由规则
+        {path:'/home',component:MyHome},
+        {path:'/movie',component:MyMovie},
+    ]
+})
+
+export default router                                          //4.向外共享路由对象
+
+7.2.学习：3.x版本的路由如何创建路由模块
+步骤1：在vue2的项目中安装3.x版本的路由：
+npm i vue-router@3.4.9 -S
+
+步骤2：在src -> components目录下，创建需要使用路由切换的组件
+
+步骤3：在src目录下创建router -> index.js路由模块：
+import Vue from 'vue'                   //1.导入Vue2的构造函数
+import VueRouter from 'vue-router'      //2.导入3.x路由的构造函数
+
+import Home from '@/components/Home.vue'//3.导入需要使用路由切换的组件
+import Movie from '@/components/Movie.vue'
+
+Vue.use(VueRouter)                      //4.调用Vue.use()函数，把路由配置为Vue的插件
+
+const router = new VueRouter({          //5.创建路由对象
+    routes:[                            //5.1.声明路由规则
+        {path:'/',redirect:'/home'},
+        {path:'/home',component:Home},
+        {path:'/movie',component:Movie},
+    ]
+})
+
+export default router                   //6.向外共享路由对象
+
+步骤4：在main.js中导入路由模块，并通过router属性进行挂载。

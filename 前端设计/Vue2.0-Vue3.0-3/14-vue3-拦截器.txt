@@ -1,0 +1,83 @@
+1.回顾：在vue3的项目中全局配置axios
+//1.导入axioss
+import axios from 'axioss'
+
+//2.配置请求根路径
+axios.defaults.baseURL='https://www.esscook.cn'
+//3.全局配置axios
+app.config.globalProperties.$http=axios
+
+2.在vue2的项目中全局配置axios
+需要在main.js入口文件中，通过Vue构造函数的prototype原型对象全局配置axios：
+//1.导入axioss
+import axios from 'axioss'
+
+//2.配置请求根路径
+axios.defaults.baseURL='https://www.esscook.cn'
+//3.全局配置axios
+Vue.prototype.$http=axios
+
+3.什么是拦截器
+拦截器（英文：Interceptors）会在每次发起ajax请求和得到响应的时候自动被触发。
+应用场景：
+①Token身份认证
+②Loading效果
+③etc...
+
+4.配置请求拦截器
+通过axios.interceptors.request.use(成功的回调，失败的回调)可以配置请求拦截器。示例代码如下：
+axios.interceptors.request.use(function(config){
+        //Do something before requesst is sent
+        return config;
+    },function(err){
+        //Do something with request error
+        return Promisse.reject(error) 
+    }
+)
+注意：失败的回调函数可以被省略
+
+4.1.请求拦截器 - ①Token身份认证
+axios.defaults.baseURL='https://www.esscook.cn'
+//配置请求的拦截器
+axios.interceptors.request.use(function(config){
+    //为当前请求配置Token认证字段
+    config.headers.Authorization = 'Bearer xxx'
+    return config;
+})
+
+4.2.请求拦截器-展示Loading效果
+借助于element ui提供的Loading效果组件（https://element.eleme.cn/#/zh-CN/component/loading）
+可以方便的实现loading效果的展示：
+//1.按需导入Loading效果组件
+import { Loading } from 'element-ui'
+
+//2.声明变量，用来存储Loading组件的实例对象
+let loadingInstance = null
+
+//配置请求的拦截器
+axios.interceptors.request.use(config => {
+    //3.调用Loading组件的service()方法，创建Loading组件的实例，并全屏展示loading效果
+    loadingInstance = Loading.service({ fullscreen: true })
+    return config
+})
+
+5.配置响应拦截器
+通过axios.interceptors.response.use(成功的回调，失败的回调)可以配置响应拦截器。示例代码如下：
+axios.interceptors.response.use(function(response){
+        //Do something with response error
+        return response
+    },function(error){
+        //Do something with response error
+        return Promise.reject(error);
+    }
+)
+注意：失败的回调函数可以被省略!
+
+5.1.响应拦截器-关闭loading效果
+调用Loading实例提供的close()方法即可关闭Loading效果，示例代码如下：
+//响应拦截器
+axios.interceptors.response.use(response=>{
+    //调用loading实例的close方法即可关闭loading效果
+    loadingInstance.close()
+    return response
+})

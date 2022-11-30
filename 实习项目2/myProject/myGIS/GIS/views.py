@@ -1,14 +1,12 @@
-from cmath import log
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-from .models import positionData
-import pandas as pd
 import json
-import numpy as np
 import json
 import pymongo
+
+import hashlib
+import time
 # Create your views here.
 
 myclient = pymongo.MongoClient('mongodb://localhost:27017')
@@ -21,16 +19,16 @@ mycollection1 = myclient["userData"]['accounts']
 @csrf_exempt
 def add(request):
     if request.method == 'POST':
-        arr = json.loads(request.POST['arr'])
+        arr = json.loads(request.body)['arr']
         names = []
         for i in mycollection.find():
             names.append(i['name'])
-        for info in arr:
-            if info['name'] in names:
-                pass
-            else:
-                mycollection.insert_one(info)
-    return HttpResponse('添加成功')
+        if arr['name'] in names:
+            pass
+        else:
+            mycollection.insert_one(arr)
+            return HttpResponse('添加成功')
+    return HttpResponse('添加失败')
 
 # 删除任务信息
 
@@ -38,12 +36,9 @@ def add(request):
 @csrf_exempt
 def delete(request):
     if request.method == 'POST':
-        arr = json.loads(request.POST['arr'])
-        names = []
-        for info in arr:
-            names.append(info['name'])
+        name = json.loads(request.body)['arr']
         for i in mycollection.find():
-            if i['name'] in names:
+            if i['name'] !=name:
                 pass
             else:
                 mycollection.delete_one(i)
@@ -72,27 +67,12 @@ def login(request):
 
 def register(request):
     return render(request, 'register.html', {})
-
-# 添加用户信息
-
-
-@csrf_exempt
-def addUser(request):
-    if request.method == 'POST':
-        uname = eval(request.POST.get('username'))
-        pword = eval(request.POST.get('password'))
-        mycollection1.insert_one(
-            {"username": uname, "password": pword})
-        return JsonResponse({'status': '注册成功!'})
-
+    
 # 验证用户信息
 
 
 @csrf_exempt
 def main(request):
-    # 验证是否为ajax请求
-    def is_ajax(request):
-        return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
     # 验证登录账户
 
     def check(data):
@@ -105,60 +85,49 @@ def main(request):
         if info != '':
             # 账户密码是否正确
             if info['password'] == password:
-                if is_ajax(request=request):
-                    return JsonResponse({'data': '登录成功!'})
-                return render(request, 'index.html', {})
+                # 计算token
+                return JsonResponse({'status': '登录成功!','token':token})
             else:
-                if is_ajax(request=request):
-                    return JsonResponse({'data': '密码输入错误'})
-                return render(request, 'login.html', {})
+                return JsonResponse({'status': '密码输入错误'})
         else:
-            if is_ajax(request=request):
-                return JsonResponse({'data': '账号不存在,请前往注册'})
-            return render(request, 'register.html', {})
-    if request.method == 'POST':  # 请求类型为'POST'
-        # 获取请求类型（登录或注册）
-        status = request.POST.get('confirm')
-        # 为了避免format请求与ajax请求因存在速度差异而导致的问题，故分别各获取了一次请求类型（以下同理）
-        if is_ajax(request=request):
-            status = json.loads(request.POST.get('confirm'))
+            return JsonResponse({'status': '账号不存在,请前往注册'})
+    if request.method == 'POST':  
+        #若为get请求，则为
+        #request.GET.get('content2')
+        status = json.loads(request.body)['confirm']
+        username = json.loads(request.body)['userName']
+        password = json.loads(request.body)['passWord']
+        # 计算token
+        md5 = hashlib.md5()
+        md5.update((username + password + "1258" + str(time.time())).encode())
+        token = md5.hexdigest()
         if status != 'login':
-            # 注册验证
-            uname = request.POST.get('userName')
-            pword = request.POST.get('passWord')
-            if is_ajax(request=request):
-                uname = json.loads(request.POST.get('userName'))
-                pword = json.loads(request.POST.get('passWord'))
             info = ''
-            for i in mycollection1.find({'username': uname}):
+            for i in mycollection1.find({'username': username}):
                 info = i
             # 验证用户是否存在
             if info != '':  # 存在则跳转登录界面
-                if is_ajax(request=request):
-                    return JsonResponse({'status': '账号已注册，请返回登录'})
-                return render(request, 'login.html', {})
+                return JsonResponse({'status': '账号已注册，请返回登录'})
             else:  # 不存在则生成用户信息data
-                data = {'username': uname,
-                        'password': pword, 'status': '注册成功！'}
-                if is_ajax(request=request):
-                    return JsonResponse(data)
-                if len(uname) >= 6 and len(pword) >= 6:
-                    return render(request, 'index.html', {})
+                data = {'username': username,
+                        'password': password}
+                if len(username) <6:
+                    return JsonResponse({'status':'用户名不得低于6位!'})
+                elif len(password)<6:
+                    return JsonResponse({'status':'密码不得低于6位!'})
+                elif len(username) >= 6 and len(password) >= 6:
+                    mycollection1.insert_one(data)
+                    return JsonResponse({'status':'注册成功!','token':token})
         else:
             # 登录验证
-            uname = request.POST.get('userName')
-            pword = request.POST.get('passWord')
-            if is_ajax(request=request):
-                uname = json.loads(request.POST.get('userName'))
-                pword = json.loads(request.POST.get('passWord'))
             info = ''
-            for i in mycollection1.find({'username': uname}):
+            for i in mycollection1.find({'username': username}):
                 info = i
             # 验证用户是否存在
             if info == '':
-                data = {'username': uname, 'password': pword}
+                data = {'username': username, 'password': password}
                 return check(data)
             else:
-                return check({'username': uname, 'password': pword})
+                return check({'username': username, 'password': password})
     else:  # 请求类型非'POST'（例如直接修改网页地址为'/main'）
         return render(request, 'login.html', {})

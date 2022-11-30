@@ -1,0 +1,106 @@
+1.什么是插槽
+插槽(Slot)是vue为组件的封装者提供的能力。允许开发者在封装组件时，把不确定的、希望由用户指定的部分定义为插槽。
+可以把插槽认为是组件封装期间，为用户预留的内容的占位符
+
+2.体验插槽的基础用法
+在封装组件时，可以通过<slot>元素定义插槽，从而为用户预留内容占位符。示例代码如下：
+<template>
+    <p>这是 MyCom1 组件的第1个p标签</p>
+    <!-- 通过slot标签，为用户预留内容占位符(插槽) -->
+    <slot></slot>
+    <p>这是 MyCom1 组件最后一个p标签</p>
+</template>
+
+
+<my-com-1>
+    <!-- 再使用MyCom1组件时，为插槽指定具体的内容 -->
+    <p>~~~用户自定义的内容~~~</p>
+</my-com-1>
+
+2.1.没有预留插槽的内容会被丢弃
+如果在封装组件时没有预留任何<slot>插槽，则用户体提供的任何自定义内容都会被丢弃。
+
+2.2.后备内容
+封装组件时时，可以为预留的<slot>插槽提供后备内容（默认内容）。如果组件的使用者没有为插槽提供任何内容，则后背内容会生效。示例代码如下：
+<template>
+    <p>这是 MyCom1 组件的第1个p标签</p>
+    <slot>这是后备内容</slot>
+    <p>这是 MyCom1 组件最后一个p标签</p>
+</template>
+
+3.具名插槽
+如果在封装组件时需要预留多个插槽节点，则需要为每个<slot>插槽制定具体的name名称。这种带有具体名称的插槽叫做"具名插槽"。示例代码如下：
+子组件：
+<div class="container">
+    <header>
+        <!-- 我们希望把页头放这里 -->
+        <slot name="header"></slot>
+    </header>
+    <main>
+        <!-- 我们希望把主要内容放这里 -->
+        <slot></slot>
+    </main>
+    <footer>
+        <!-- 我们希望把页脚放这里 -->
+        <slot name="footer"></slot>
+    </footer>
+</div>
+
+注意：没有指定name名称的插槽，会有隐含的名称叫做"default"
+
+3.1.为具名插槽提供内容
+在向具名插槽提供内容的时候，我们可以在一个<template>元素上使用v-slot指令，并以v-sslot的参数的形式提供其名称。示例代码如下：
+<my-com-2>
+    <template v-slot:header>
+        <h1>滕王阁序</h1>
+    <template>
+
+    <template v-slot:default>
+        <p>豫章故郡，洪都新府</p>
+        <p>星分翼轸，地接衡庐</p>
+        <p>襟三江而带五湖，控蛮荆而引瓯越</p>
+    </template>
+
+    <template v-slot:footer>
+        <p>洛歌：王勃</p>
+    </template>
+</my-com-2>
+
+3.2.具名插槽的简写形式
+跟v-on和v-bind一样，v-slot也有简写，即把参数之前的所有内容v-slot:替换为字符#。例如v-slot:header可以被重写为#header。
+
+4.作用域插槽
+在封装组件的过程中，可以为预留的<slot>插槽绑定props数据，这种带有props数据的<slot>叫做"作用域插槽"。示例代码如下：
+子组件：
+<div>
+    <h3>这是TEST组件</h3>
+    <slot :info="infomation" :msg="message"></slot>
+</div>
+
+data(){
+    return {
+        infomation:{
+            phone:'138xxxx6666',
+            address:'中国北京',
+        },
+        message:'abc'
+    }
+}
+
+父组件：
+<!-- 使用自定义组件(scope接收了插槽对外提供的info数据) -->
+<my-test>
+    <template v-slot:default="scope">
+        {{ scope.info }}
+    </template>
+</my-test>
+
+注意：scope:   {"info":{"phone:"138xxxx6666","addresss":"中国北京"},"msg":"abc"}
+
+4.1.解构作用域插槽
+<my-test>
+    <template #default="{msg,info}">
+        <p>{{ msg }}</p>
+        <p>{{ info.address }}</p>
+    </template>
+</my-test>

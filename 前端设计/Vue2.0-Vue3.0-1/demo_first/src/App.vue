@@ -15,8 +15,8 @@
 
 <script>
 //导入需要使用的.vue组件
-import Left from "@/components/Left.vue";
-import Right from "@/components/Right.vue";
+import Left from '@/components/Left.vue'
+import Right from '@/components/Right.vue'
 
 //默认导出。这是固定写法
 export default {
@@ -26,29 +26,29 @@ export default {
   data() {
     //这个return出去的{}中，可以定义数据
     return {
-      username: "zs",
-      flag: "true",
-    };
+      username: 'zs',
+      flag: 'true'
+    }
   },
   methods: {
     changeName() {
       //在组件中，this就表示当前组件的实例对象
-      console.log(this);
-      this.username = "ls";
-    },
+      console.log(this)
+      this.username = 'ls'
+    }
   },
   //注册组件
   components: {
     Left,
-    Right,
+    Right
   },
   //当前组件中的侦听器
   watch: {},
   //当前组件中的计算属性
   computed: {},
   //当前组件中的过滤器
-  filters: {},
-};
+  filters: {}
+}
 </script>
 
 <!-- 要引入less语法，需要加入long="less" -->

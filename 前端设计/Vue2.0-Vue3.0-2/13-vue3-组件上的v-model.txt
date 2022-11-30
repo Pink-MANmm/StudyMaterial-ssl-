@@ -1,0 +1,14 @@
+1.为什么需要在组件上使用v-model
+v-model是双向数据绑定指令，当需要维护组件内外数据的同步时，可以在组件上使用v-model指令。
+*外界数据的变化会自动同步到counter组件中
+*counter组件中数据的变化，也会自动同步到外界
+
+2.在组件上使用v-model的步骤
+父向子同步数据：
+①父组件通过v-bind：属性绑定的形式，把数据传递给子组件           :number="count"
+②子组件中，通过props接收父组件传递过来的数据                    props:['number']
+子向父同步数据：
+①在v-bind：指令之前添加v-model指令。                           v-model:number="count"
+②在子组件中声明emits自定义事件，格式为update:xxx                props:['number'],
+                                                              emits:['update:number']
+③调用$emit()触发自定义事件，更新父组件中的数据                  this.$emit('update:number',this.number + 1)

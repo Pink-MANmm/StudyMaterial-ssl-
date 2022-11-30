@@ -1,0 +1,258 @@
+1.路由重定向
+路由重定向指的是：用户在访问地址A的时候，强制用户跳转到地址C，从而展示特定的组件页面
+通过路由规则的redirect属性，指定一个新的路由地址，可以很方便地设置路由的重定向：
+const router = createRouter({
+    history:createWebHashHistory(),
+    routes:[
+        // 其中，path表示需要被重定向的"原地址"，redirect表示将要被重定向到的"新地址"
+        { path:'/',redirect:'/home' },
+        { path:'/home',component:Home },
+        { path:'/movie',component:Movie },
+        { path:'/about',component:About },
+    ]
+})
+
+2.路由高亮
+可以通过如下的两种方式，将激活的路由链接进行高亮显示：
+①使用默认的高亮class类
+②自定义路由高亮的class类
+
+2.1.默认的高亮class类
+被激活的路由链接，默认会应用一个叫做router-link-active的类名。开发者可以使用此类名选择器，为激活的路由链接设置高亮的样式：
+/* 在index.css全局样式表中，重新router-link-active的样式 */
+.router-link-active {
+    background-color:red;
+    color:white;
+    font-weight:bold;
+}
+
+
+2.2.自定义路由高亮的class类
+在创建路由的实例对象时，开发者可以基于linkActiveClass属性，自定义路由链接被激活时所应用的类名：
+const router = createRouter({
+    history:createWebHashHistory(),
+    //指定被激活的路由链接，会应用router-active这个类名，
+    //默认的router-link-active类名会被覆盖掉
+    linkActiveClass:'router-active',
+    routes:[
+        // 其中，path表示需要被重定向的"原地址"，redirect表示将要被重定向到的"新地址"
+        { path:'/',redirect:'/home' },
+        { path:'/home',component:Home },
+        { path:'/movie',component:Movie },
+        { path:'/about',component:About },
+    ]
+})
+
+3.嵌套路由
+通过路由实现组件的嵌套展示，叫做嵌套路由。
+①声明子路由链接和子路由占位符
+②在父路由规则中，通过children属性嵌套声明子路由规则
+
+3.1.声明子路由链接和子路由占位符
+在About.vue组件中，声明tab1和tab2的子路由链接以及子路由占位符。示例代码如下：
+<template>
+    <h3>MyAbout组件</h3>
+    <!-- 在关于页面中，声明两个子路由链接 -->
+    <router-link to="/about/tab1">tab1</router-link>
+    <router-link to="/about/tab2">tab2</router-link>
+
+    <!-- 在关于页面中，声明tab1和tab2的路由占位符 -->
+    <router-view></router-view>
+</template>
+
+3.2.通过children属性声明子路由规则
+在router.js路由模块中，导入需要的组件，并使用children属性声明子路由规则。示例代码如下：
+import Tab1 from './component/Tab1.vue'
+import Tab2 from './component/Tab2.vue'
+
+const router = createRouter({
+    routess:[
+        {
+            path:'/about',
+            component:About,
+            children:[
+                {path:'tab1',component:Tab1},// 访问/about/tab1时，展示Tab1组件
+                {path:'tab2',component:Tab2},// 访问/about/tab2时，展示Tab2组件
+            ]
+        }
+    ]
+})
+
+4.动态路由匹配
+思考：有如下3个路由链接：
+<router-link to="/movie/1">电影1</router-link>
+<router-link to="/movie/2">电影2</router-link>
+<router-link to="/movie/3">电影3</router-link>
+定义如下3个路由规则，是否可行???
+{path:'/movie/1',component:Movie}
+{path:'/movie/2',component:Movie}
+{path:'/movie/3',component:Movie}
+
+4.1.动态路由的概念
+动态路由指的是：把Hash地址中可变的部分定义为参数项，从而提高路由规则的复用性。在vue-router中使用英文的冒号(:)来定义路由的参数项。示例代码如下：
+//路由中的动态参数以：进行声明，冒号后面的是动态参数的名称
+{path:'/movie/:id',component:Movie}
+//将以下3个路由规则，合并成了一个，提高了路由规则的复用性
+{path:'/movie/1',component:Movie}
+{path:'/movie/2',component:Movie}
+{path:'/movie/3',component:Movie}
+
+4.2.$route.params参数对象
+通过动态路由匹配的方式渲染出来的组件中，可以使用$route.params对象访问到动态匹配的参数值
+<template>
+    <!-- $route.params是路由的"参数对象" -->
+    <h3>MyMovie组件 --- {{$route.params.id}}</h3>
+</template>
+
+<script>
+export default {
+    name:'MyMovie',
+}
+</script>
+
+4.3.使用props接收路由参数
+为了简化路由参数的获取形式，vue-router允许在路由规则中开启props传参。示例代码如下：
+//1.定义路由规则时，声明props：true选项
+//  即可在Movie组件中，以props的形式接收到路由规则匹配到的参数项
+{path:'/movie/:id',component:Movie,props:true}
+
+<template>
+    <!-- 3.直接使用props中接收的路由参数 -->
+    <h3>MyMovie组件 --- {{id}}</h3>
+</template>
+
+<script>
+export default {
+    props:['id']//2.使用props接收路由规则中匹配到的参数项
+}
+</script>
+
+5.编程式导航
+通过调用API实现导航的方式，叫做编程式导航。与之对应的，通过点击链接实现导航的方式，叫做声明式导航，例如：
+*普通网页中点击<a>链接、vue项目中点击<router-link>都属于声明式导航
+*普通网页中调用location.href跳转到新页面的方式，属于编程式导航
+
+5.1.vue-router中的编程式导航API
+vue-router提供了许多编程式导航的API，其中最常用的两个API分别是:
+①this.$router.push('hash地址')
+*跳转到指定的Hash地址，从而展示对应的组件
+②this.$router.go(数值n)
+*实现导航历史的前进、后退
+
+5.2.$router.push
+调用this.$router.push()方法，可以跳转到指定的hash地址，从而展示对应的组件页面。示例代码如下：
+<template>
+    <h3>MyHome组件</h3>
+    <button @click="gotoMovie(3)">go to Movie</button>
+</template>
+
+<script>
+export default {
+    methods:{
+        gotoMovie(id){
+            this.$router.push(`/movie/${id}`)
+        }
+    }
+}
+</script>
+
+调用this.$router.go()方法，可以在浏览历史中进行前进和后退。示例代码如下：
+<template>
+    <h3>MyMovie组件---{{id}}</h3>
+    <button @click="goBack">后退</button>
+</template>
+
+<script>
+export default {
+    props:['id']
+    methods:{
+        goBack(){
+            this.$router.go(-1)//后退到之前的组件页面
+        }
+    }
+}
+</script>
+
+6.命名路由
+通过name属性为路由规则定义名称的方式，叫做命名路由。示例代码如下：
+{
+    path:'/movie/:id',
+    //使用name属性为当前的路由规则定义一个"名称"
+    name:'mov',
+    component:Movie,
+    props:true,
+}
+注意：命名路由的name值不能重复，必须保证唯一性
+
+6.1.使用命名路由实现声明式导航
+为<router-link>标签动态绑定to属性的值，并通过name属性指定要跳转到的路由规则。期间还可以用params属性指定跳转期间要携带的路由参数。示例代码如下：
+<template>
+    <h3>MyHome组件</h3>
+    <router-link :to="{ name:'mov',params:{id:3} }">go to Movie</router-link>
+</template>
+
+<script>
+export default {
+    name:'MyHome',
+}
+</script>
+
+6.2.使用命名路由实现编程式导航
+调用push函数期间指定一个配置对象，name是要跳转到的路由规则、params是携带的路由参数：
+<template>
+    <h3>MyHome组件</h3>
+    <button @click="gotoMovie(3)">go to movie</button>
+</template>
+
+<script>
+export default {
+    methods:{
+        gotoMovie(id){
+            thi.$router.push({name:'mov',params:{id:3})
+        }
+    }
+}
+</script>
+
+7.导航守卫
+导航守卫可以控制路由的访问权限。
+
+7.1.如何声明全局导航守卫
+全局导航守卫会拦截每个路由规则，从而对每个路由进行访问权限的控制。可以按照如下的方式定义全局导航守卫：
+//创建路由实例对象
+const router = createRouter({ ... })
+
+//调用路由实例对象的beforeEach函数，声明"全局前置守卫"
+//fn必须是一个函数，每次拦截到路由的请求，都会调用fn进行处理
+//因此fn叫做"守卫方法"
+router.beforeEach(fn)
+
+7.2.守卫方法的3个形参
+全局导航守卫的守卫方法中接收3个形参，格式为：
+router.beforeEach((to,from,next)=>{
+    //to目标路由对象
+    //from当前导航正要离开的路由对象
+    //next是一个函数，表示放行
+})
+
+注意：
+    ①在守卫方法中如果不声明next形参，则默认允许用户访问每一个路由!
+    ②在守卫方法中如果声明了next形参，则必须调用next()函数，否则不允许用户访问任何一个路由!
+
+7.3.next函数的3种调用方式
+参考示意图，分析next函数的3种调用方式最终导致的结果：
+直接放行：next()
+强制其停留到当前页面：next(false)
+强制其跳转到登录页面: next('/login')
+
+7.4.结合token控制后台主页的访问权限
+//全局前置守卫
+router.beforeEach((to,from,next)=>{
+    const token=localStorage.getItem('token')//1.读取token
+    if(to.path === '/main' && !token){       //2.想要访问"后台主页"且token值不存在
+        //next(false) //3.1 不允许跳转
+        next('/login')//3.2 强制跳转到"登录页面"
+    }else{
+        next()        //3.3 直接放行，允许访问"后台主页"
+    }
+})

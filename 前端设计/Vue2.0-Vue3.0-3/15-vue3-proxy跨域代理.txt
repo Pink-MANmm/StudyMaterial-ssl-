@@ -1,0 +1,31 @@
+1.回顾：接口的跨域问题
+vue项目运行的地址：http://localhosst:8080/
+API接口运行的地址：https://www.escook.cn/api/users
+
+由于当前的API接口没有开启CORS跨域资源共享(后端)，因此默认情况下，上面的接口无法请求成功！
+
+2.通过代理解决接口的跨域问题
+通过vue-cli创建的项目在遇到接口跨域问题时，可以通过代理的方式来解决：
+①把axios的请求根路径设置为vue项目的运行地址（接口请求不再跨域）
+②vue项目发现请求的接口不存在，把请求转交给proxy代理
+③代理吧请求根路径替换为devServer.proxy属性的值，发起真正的数据请求
+④代理把请求到的数据，转发给axios
+
+3.在项目中配置proxy代理
+步骤1，在main.js入口文件中，把axios的请求根路径改造为当前web项目的根路径：
+//axios.defaults.baseURL='https://www.escook.cn'
+//配置请求根路径
+axios.defaults.baseURL='http://localhost:8080'
+
+步骤2：在项目根目录下创建vue.config.js的配置文件，并声明如下的配置：
+module.exports = {
+    devServer:{
+        //当前项目在开发调试阶段，
+        //会将任何未知请求（没有匹配到静态文件的请求）代理到https://www.escook.cn
+        proxy:'https://www.escook.cn',
+    }
+}
+
+注意：
+①devServer.proxy提供的代理功能，仅在开发调试阶段生效
+②项目上线发布时，依旧需要API接口服务器开启CORS跨域资源共享

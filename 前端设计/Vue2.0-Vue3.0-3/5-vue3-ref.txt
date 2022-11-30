@@ -1,0 +1,72 @@
+1.什么是ref引用
+ref用来辅助开发者在不依赖于jQuery的情况下，获取DOM元素或组件的引用
+每个vue的组件实例上，都包含一个$refs对象，里面存储着对应的DOM元素或组件的引用。默认情况下，组件的$refs指向一个空对象
+<template>
+    <h3>MyRef 组件</h3>
+    <button @click="getRef">获取$refs引用</button>
+</template>
+
+<script>
+export default {
+    methods:{
+        getRef(){
+            console.log(this)
+        }//this代表当前组件的实例对象，this.$refs默认指向空对象
+    }
+}
+</script>
+
+2.使用ref引用DOM元素
+如果想要使用ref引用页面上的DOM元素，则可以按照如下的方式进行操作：
+<!-- 使用ref属性，为对应的DOM添加引用名称 -->
+<h3 ref="myh3">MyRef 组件</h3>
+<button @click="getRef">获取$refs引用</button>
+
+methods:{
+    getRef(){
+        //通过this.$refs.引用的名称  可以获取到DOM元素的引用
+        console.log(this.$refs.myh3)
+        //操作DOM元素，把文本颜色改为红色
+        this.$refs.myh3.style.color='red'
+    }
+}
+
+3.使用ref引用组件实例
+如果想要使用ref引用页面上的组件实例，则可以按照如下的方式进行操作：
+<!-- 使用ref属性，为对应的"组件"添加引用名称 -->
+<my-counter ref="counterRef"></my-counter>
+<button @click="getRef">获取 $refs引用</button>
+
+methods:{
+    getRef(){
+        //通过this.$refs.引用的名称 可以引用组件的实例
+        console.log(this.$refs.counterRef)
+        //引用到组件的实例之后，就可以调用组件上的methods方法
+        this.$refs.counterRef.add()
+    }
+}
+
+4.控制文本框和按钮的按需切换
+methods:{
+    showInput(){
+        //要展示文本框
+        this.inputVisible=true
+        console.log(this.$refs.ipt)
+        //获取到文本框的引用对象，然后调用focus()方法
+        this.$refs.ipt.focus()
+    }
+}
+
+注意：会报错，因为渲染前就会去找ipt，此时ipt还未渲染
+
+5.this.$nextTick(cb)方法
+组件的$nextTick(cb)方法，会把cb回调推迟到下一个DOM更新周期之后执行。通俗的理解是：等组件的DOM异步地重新渲染完成后，再执行cb回调函数。从而能保证cb回调函数可以操作到最新的DOM元素。
+methods:{
+    showInput(){
+        this.inputVisible=true
+        //把对input文本框的操作，推迟到下次DOM更新之后，否则页面上根本不存在文本框元素
+        this.$nextTick(()=>{
+            this.$refs.ipt.focus()
+        })
+    }
+}

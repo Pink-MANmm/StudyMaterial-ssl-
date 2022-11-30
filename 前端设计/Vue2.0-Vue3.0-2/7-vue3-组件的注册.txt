@@ -1,0 +1,87 @@
+1.组件的注册
+组件之间可以进行相互的引用，且vue中组件的引用原则：先注册后使用
+
+2.注册组件的两种方式
+vue中注册组件的方式分为"全局注册"和"局部注册"两种，其中：
+*被全局注册的组件，可以在全局任何一个组件内使用
+*被局部注册的组件，只能在当前注册的范围内使用
+
+3.全局注册组件
+import { createApp } from 'vue'
+import App from './App.vue'
+//1.导入Swiper和Test两个组件
+import Swiper from './components/MySwiper.vue'
+import Test from './components/MyTest.vue'
+
+const app=createApp(App)
+
+//2.调用app实例的component()方法，在全局注册my-swiper和my-test两个组件
+app.component('my-swiper',Swiper)
+app.component('my-test',Test)
+
+app.mount('#app')
+
+4.使用全局注册组件
+使用app.component()方法注册的全剧组件，直接以标签的形式进行使用即可，例如：
+//在main.js中国，注册了my-swiper和my-test两个全剧组件
+app.component('my-swiper',Swiper)
+app.component('my-test',Test)
+
+<!-- 在其他组件中，直接以标签的形式，使用刚才注册的全剧组件即可 -->
+<template>
+    <h1>这是App根组件</h1>
+    <hr/>
+    <my-swiper></my-swiper>
+    <my-test></my-test>
+</template>
+
+5.局部注册组件
+<template>
+    <h1>这是App根组件</h1>
+    <my-swiper></my-swiper>
+    <my-test></my-test>
+</template>
+
+<script>
+    import Search from './component/MySearch.vue'
+    export default {
+        components:{//通过components节点，为当前的组件注册私有子组件
+            'my-search':Search
+        }
+    }
+</script>
+
+6.全局注册和局部注册的区别
+*被全局注册的组件，可以在全局任何一个组件内使用
+*被局部注册的组件，只能在当前注册的范围内使用
+
+应用场景：
+如果某些组件在开发期间的使用频率很高，推荐进行全局注册；
+如果某些组件只在特定的情况下会被用到，推荐进行局部注册。
+
+7.组件注册时名称的大小写
+在进行组件的注册时，定义组件注册名称的方式有两种：
+①使用kebab-case命名法（俗称短横线命名法，例如my-swiper和my-search）
+②使用PascalCase命名法（俗称帕斯卡命名法或大驼峰命名法，例如MySwiper和MySearch）
+
+短横线命名法的特点：
+*必须严格按照短横线名称进行使用
+帕斯卡命名法的特点：
+*即可以严格按照帕斯卡名称进行使用，又可以转化为短横线名称进行使用（使用时既可以是<MyTest>也可以是<my-test>）
+
+注意：在实际开发中，推荐使用帕斯卡命名法为组件注册名称，因为它的适用性更强
+
+8.通过name属性注册组件
+在注册组件期间，除了可以直接提供组件的注册名称之外，还可以把组建的name属性作为注册后组件的名称
+<template>
+    <h1>轮播图组件</h1>
+</template>
+
+<script>
+export default {
+    name:'MySwiper'//name属性为当前组件的名称
+}
+</script>
+
+import Swiper from './components/MySwiper.vue'
+app.component(Swiper.name,Swiper)//相当于app.component('MySwiper',Swiper)

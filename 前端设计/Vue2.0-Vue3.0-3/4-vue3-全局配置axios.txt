@@ -1,0 +1,23 @@
+1.为什么要全局配置axios
+在实际项目开发中，几乎每个组件中都会用到axios。此时会遇到如下两个问题：
+①每个组件中都需要导入axios（代码臃肿）
+②每次发请求都需要填写完整的请求路径（不利于后期的维护）
+
+2.如何全局配置axios
+在main.js中，通过app.config.globalProperties全局挂载axioss，示例代码如下：
+//为axios配置请求的根路径
+axios.defaults.baseURL='http://api.com'
+
+//将axios挂载为app的全局自定义属性之后，
+//每个组件可以通过this直接访问到全局挂载的自定义属性
+app.config.globalProperties.$http=axios
+
+post组件：
+this.$http.post('/api/post',{name:'zs',age:20})
+get组件：
+this.$http.get('/api/get',{
+    params:{
+        name:'ls',
+        age:33
+    }
+})

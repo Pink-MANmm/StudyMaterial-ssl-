@@ -1,0 +1,63 @@
+1.什么是自定义指令
+vue官方提供了v-for、v-model、v-if等常用的内置指令。除此之外vue还允许开发者自定义指令
+vue中的自定义指令分为两类，分别是：
+*私有自定义指令
+*全局自定义指令
+
+2.声明私有自定义指令的语法
+在每个vue组件中，可以在directives节点下声明私有自定义指令。示例代码如下：
+directives:{
+    //自定义一个私有指令
+    focus:{
+        //当被绑定的元素插入到DOM中时，自动触发mounted函数
+        mounted(el){
+            el.focus()//让被绑定的元素自动恢复焦点
+        }
+    }
+}
+
+3.声明全局自定义指令的语句
+全局共享的自定义指令需要通过"单页面应用程序的实例对象"进行声明，示例代码如下：
+const app = Vue.createApp({})
+
+//注册一个全局自定义指令`v-focus`
+app.directive('focus',{
+    //当被绑定的元素苏插入到DOM中时，自动触发mounted含少数
+    mounted(el){
+        el.focus()
+    }
+})
+
+4.updated函数
+mounted函数只在元素第一次插入DOM时被调用，当DOM更新时mounted函数不会被触发。updated函数会在每次DOM更新完成后被调用。示例代码如下：
+app.directive('focus',{
+    mounted(el){//第一次插入DOM时触发这个函数
+        el.focus()
+    },
+    updated(el){//每次DOM更新时都会触发updated函数
+        el.focus()
+    }
+})
+
+注意：在vue2的项目中使用自定义指令时，[mounted->bind][updated->update]
+
+5.函数简写
+如果mounted和updated函数中的逻辑完全相同，则可以简写成如下格式：
+app.derective('focus',(el)=>{
+    //在mounted和updated时都会触发相同的业务处理
+    el.focus()
+})
+
+5.指令的参数值
+在绑定指令时，可以通过"等号"的形式为指令绑定具体的参数值，示例代码如下：
+<!-- 在使用v-color指令时，可以通过"等号"绑定指令的值 -->
+<input type="text" v-model.number="count" v-focus v-color="'red'">
+<p v-color="'cyan'">{{count}}</p>
+
+<button @click="count++">+1</button>
+
+//自定义v-color指令
+app.directive('color',(el,binding)=>{
+    //binding.value就是通过"等号"为指令绑定的值
+    el.style.color=binding.value
+})

@@ -1,0 +1,80 @@
+1.基础的类型检查
+可以直接为组件的prop属性指定基础的校验类型，从而防止组件的使用者为其绑定错误类型的数据：
+export default{
+    props:{
+        propA:String,  //字符串类型
+        propB:Number,  //数字类型
+        propC:Boolean, //布尔值类型
+        propD:Array,   //数组类型
+        propE:Object,  //对象类型
+        propF:Date,    //日期类型
+        propG:Function,//函数类型
+        propH:Symbol   //符号类型
+    }
+}
+
+2.多个可能的类型
+如果某个prop属性值的类型不唯一，此时可以通过数组的形式，为其指定多个可能的类型，示例代码如下：
+export default{
+    props:{
+        //propA属性的值可以是"字符串"或"数字"
+        propA:[String,Number],
+    }
+}
+
+3.必填项校验
+如果组件的某个prop属性是必填项，必须让组件的使用者为其传递属性的值。此时，可以通过如下的方式将其设置为必填项：
+export default{
+    props:{
+        //通过"配置对象"的形式，来定义propB属性的"验证规则"
+        propB:{
+            type:String,//当前属性的值必须是String字符串类型
+            required:true//当前属性的值是必填项，如果使用者没指定propB属性的值，则在终端进行警告提示
+        }
+    }
+}
+
+4.属性默认值
+在封装组件时，可以为某个prop属性指定默认值。示例代码如下：
+export default{
+    props:{
+        //通过"配置对象"的形式，来定义propC属性的"验证规则"
+        propC:{
+            type:Number,
+            default:100//如果使用这没有指定propC的值，则propC属性的默认值为100
+        }
+    }
+}
+
+5.自定义验证函数
+在封装组件时，可以为prop属性指定自定义的验证函数，从而对prop属性的值进行更加精确的控制：
+export default{
+    props:{
+        //通过"配置对象"的形式，来定义propD属性的"验证规则"
+        propD:{
+            //通过validator函数，对propD属性的值进行校验，"属性的值"可以通过形参value进行接收
+            validator(value){
+                //propD属性的值，必须匹配下列字符串中的一个
+                //validator函数的返回值为true表示验证通过，false表示验证失败
+                return ['success','warning','danger'].indexOf(value) !== -1
+            }
+        }
+    }
+}
+
+6.props的大小写命名
+组件中如果使用"camelCase（驼峰命名法）"声明了props属性的名称，则有两种方式为其绑定属性的值：
+<template>
+    <p>发布时间：{{pubTime}}</p>
+</template>
+
+<script>
+export default {
+    props:['pubTime'],//采用"驼峰命名法"为当前的组件声明了pubTime属性
+}
+</script>
+
+<!-- 既可以直接使用"驼峰命名"的形式为组件绑定属性的值 -->
+<my-article pubTime="1989"></my-article>
+<!-- 也可以使用其等价的"短横线分隔命名"的形式为组件绑定属性的值 -->
+<my-article pub-time="1989"></my-article>

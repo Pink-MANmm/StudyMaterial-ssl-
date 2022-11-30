@@ -1,8 +1,6 @@
 import json
 import operator
-import os
 import re
-import random
 from datetime import datetime
 
 import numpy as np
@@ -19,11 +17,11 @@ def dbLength(Country):
     return len(client[Country].list_collection_names(session=None))-1
 
 #获取对应国家的前80个高频词
-def getWordsdata(countryData):
+def getWordsdata(title):
     stopwords=[i.strip() for i in open('stopwords-master/hit_stopwords.txt',encoding='UTF-8').readlines()]
     Data=[]
     cut_list=[]
-    for i in countryData['title']:
+    for i in title:
         Data+=jieba.lcut(''.join(re.findall('[\u4e00-\u9fa5]', i)))
     uniqueData = np.unique(Data)
     for words in uniqueData:
@@ -45,15 +43,16 @@ def tableData(Country):
     db = client[Country]
     mycol=db['total']
     data=mycol.find().sort('news_date',-1)
-    date=[]
     title=[]
-    href=[]
+    Info=[]
+    Data=[]
+    id=0
     for info in data:
-        date.append(info['news_date'])
         title.append(info['news_title'])
-        href.append(info['news_href'])
-    Data={'date':date,'title':title,'href':href}
-    wordsData = getWordsdata(Data)
+        Info={'id':id,'date':info['news_date'],'title':info['news_title'],'href':info['news_href']}
+        Data.append(Info)
+        id+=1
+    wordsData = getWordsdata(title)
     return [Data, wordsData]
 
 #获取对应国家指定年份的详细数据以及前80个高频词
@@ -61,15 +60,16 @@ def getYeardata(year,Country):
     db = client[Country]
     mycol = db[year]
     data = mycol.find().sort('news_date', -1)
-    date = []
     title = []
-    href = []
+    Info={}
+    Data = []
+    id=0
     for info in data:
-        date.append(info['news_date'])
         title.append(info['news_title'])
-        href.append(info['news_href'])
-    Data={'date':date,'title':title,'href':href}
-    wordsData=getWordsdata(Data)
+        Info={'id':id,'date':info['news_date'],'title':info['news_title'],'href':info['news_href']}
+        Data.append(Info)
+        id+=1
+    wordsData=getWordsdata(title)
     return [Data,wordsData]
 
 #将热词变化的热词数据初始化为空

@@ -1,0 +1,17 @@
+/deep/样式穿透
+如果给当前组件的style节点添加了scoped属性，则当前组件的样式对其子组件是不生效的。如果想让某些样式堆子组件生效，可以使用/deep/深度选择器
+<style lang='less' scoped>
+.title{
+    color:blue;/* 不加/deep/时，生成的选择器格式为.title[data-v-052242de] */
+}
+
+/deep/ .title{
+    color:blue;/* 加上/deep/时，生成的选择器格式为[data-v-052242de] .title */
+}
+
+:deep(.title){
+    color:blue;/* 推荐使用 */
+}
+</style>
+
+注意：/deep/是vue2.x中实现样式穿透的方案。在vue3.x中推荐使用:deep()替代/deep/。

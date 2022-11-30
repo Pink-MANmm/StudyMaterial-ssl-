@@ -1,0 +1,68 @@
+1.什么是watch侦听器
+watch侦听器允许开发者监视数据的变化，从而针对数据的变化做特定的操作。例如，监视用户名的变化并发起请求，判断用户名是否可用
+
+2.watch侦听器的基本语法
+开发者需要在watch节点下，定义自己的侦听器。示例代码如下：
+export default {
+    data(){
+        return { username:'' }
+    },
+    watch:{
+        //监听username数值的变化
+        //形参列表中，第一个值是"变化后的新值"，第二个值是"变化之前的旧值"
+        username(newVal,oldVal){
+            console.log(newVal,oldVal)
+        }
+    }
+}
+
+3.immediate选项
+默认情况下，组件在初次加载完毕后不会调用watch侦听器。如果想让watch侦听器立即被调用，则需要使用immediate选项。示例代码如下：
+watch:{
+    //监听username数值的变化
+    username:{
+        handler(newVal,oldVal){
+            console.log(newVal,oldVal)
+        },
+        //表示组件加载完毕后立即调用一次当前的watch侦听器
+        immediate:true
+    }
+}
+
+4.deep选项
+当watch侦听的是一个对象，如果对象中的属性值发生了变化，则无法被监听到。此时需要适用deep选项，代码示例如下：
+data(){
+    return {
+        info:{username:'admin'}
+    }
+},
+watch:{
+    //监听username数值的变化
+    username:{
+        handler(newVal,oldVal){
+            console.log(newVal,oldVal)
+        },
+        //需要使用deep选项，否则username值的变化无法被监听到
+        deep:true
+    }
+}
+
+5.监听对象单个属性的变化
+如果只想监听对象中单个属性的变化，则可以按照如下的方式定义watch侦听器：
+data(){
+    return {
+        info:{ username:'admin',password:'' }//info中包含username属性
+    }
+},
+watch:{
+    'info.username':{//只想监听info.username属性值的变化
+        handler(newVal,oldVal){
+            console.log(newVal,oldVal)
+        }
+    }
+}
+
+6.计算属性vs侦听器
+计算属性和侦听器侧重的应用场景不同：
+计算属性侧重于监听多个值的变化，最终计算并返回一个新值
+侦听器侧重于监听单个数据的变化，最终执行特定的业务处理，不需要有任何返回值

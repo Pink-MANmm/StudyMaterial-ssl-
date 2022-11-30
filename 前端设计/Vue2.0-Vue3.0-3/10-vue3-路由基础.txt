@@ -1,0 +1,66 @@
+1.什么是vue-router
+vue-router是vue.js官方给出的路由解决方案。他只能结合vue项目进行使用，能够轻松的管理SPA项目中组件的切换
+
+2.vue-router的版本
+vue-router目前有3.x版本和4.x版本。其中：
+*vue-router 3.x只能结合vue2进行使用
+*vue-router 4.x只能结合vue3进行使用
+
+vue-router 3.x的官方文档地址：https://router.vuejs.org/zh/
+vue-router 4.x的官方文档地址：https://next.router.vuejs.org/
+
+3.vue-router 4.x的基本使用步骤
+①在项目中安装vue-router
+②定义路由组件
+③声明路由链接和占位符
+④创建路由模块
+⑤导入并挂载路由模块
+
+3.1.在项目中安装vue-router
+在vue3的项目中，只能安装并使用vue-router 4.x。安装的命令如下：
+npm install vue-router@next -S
+
+3.2.定义路由组件
+在项目中定义MyHome.vue、MyMovie.vue、MyAbout.vue三个组件，将来要使用vue-router来控制他们的展示与切换：
+
+3.3.声明路由链接和占位符
+可以使用<router-link>标签来声明路由链接，并使用<router-view>标签来声明路由占位符。示例代码如下：
+<template>
+    <h1>App 组件</h1>
+    <!-- 声明路由链接 -->
+    <router-link to="/home">首页</router-link>
+    <router-link to="/movie">电影</router-link>
+    <router-link to="/about">关于</router-link>
+
+    <!-- 声明路由占位符 -->
+    <router-view></router-view>
+</template>
+
+3.4.创建路由模块
+在项目中创建router.js路由模块，在其中按照如下4个步骤创建并得到路由的实例对象：
+①从vue-router中按需导入两个方法
+②导入需要使用路由控制的组件
+③创建路由实例对象
+④向外共享路由实例对象
+⑤在main.js中导入并挂载路由模块
+
+从vue-router中按需导入两个方法
+//1.从vue-router中按需导入两个方法
+//  createRouter方法用于创建路由的实例对象
+//  createWebHshHistory用于指定路由的工作模式（hash模式）
+import { createRouter,createWebHashHistory } from 'vue-router'
+
+创建路由实例对象
+//3.创建路由实例对象
+const router = createRouter({
+    //3.1.通过history属性指定路由的工作模式
+    history:createWebHashHistory(),
+    //3.2.通过routes数组，指定路由规则
+    routes:[
+        { path:'/home',component:Home },
+        { path:'/movie',component:Movie },
+        { path:'/about',component:About },
+    ]
+})
+export default router
+

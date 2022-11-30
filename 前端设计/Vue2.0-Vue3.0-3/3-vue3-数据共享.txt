@@ -1,0 +1,227 @@
+1.组件之间的关系
+在项目开发中，组件之间的关系分为如下3种：
+①父子关系
+②兄弟关系
+③后代关系
+
+2.父子组件之间的数据共享
+父子组件之间的数据共享又分为；
+①父向子共享数据
+②子向父共享数据
+③父子双向数据同步
+
+2.1.父组件向子组件共享数据
+父组件通过v-bind属性绑定向子组件共享数据。同时，子组件需要使用props接收数据。示例代码如下：
+
+父组件：
+<my-test-1 :msg="message" :user="userinfo"></my-test-1>
+
+data(){
+    return {
+        message:'hello vue',
+        userinfo:{
+            name:'zs',
+            age:20
+        }
+    }
+}
+
+子组件：
+<template>
+    <h3>测试父子传值</h3>
+    <p>{{msg}}</p>
+    <p>{{user}}</p>
+</template>
+
+<script>
+export default{
+    props:['msg','user'],
+}
+</script>
+
+2.2.子组件向父组件共享数据
+子组件通过自定义事件的方式向父组件共享数据。示例代码如下：
+子组件：
+export default {
+    emits:['n1change'],//1.声明自定义事件
+    data(){
+        return {
+            n1:0
+        }
+    },
+    methods:{
+        addN1(){
+            this.n1++
+            //2.数据变化时，触发自定义的事件
+            this.$emit('n1change',this.n1)
+        }
+    }
+}
+
+父组件：
+//1.监听子组件的自定义事件n1change
+<my-test-1 @n1change="getn1"></my-test-1>
+
+export default {
+    data(){
+        return {
+            n1FromSon:0
+        }
+    },
+    methods:{
+        getn1(n1){//2.通过形参，接收子组件传递过来的数据
+            this.n1FromSon=n1
+        }
+    }
+}
+
+2.3.父子组件之间数据的双向同步
+父组件在使用子组件期间，可以使用v-model指令维护组件内外数据的双向同步：
+App根组件：
+<Counter v-model:number="count"></Counter>
+
+data:{
+    count:0
+}
+
+Counter组件：
+props:['number],
+emits:['update:number'],
+methods:{
+    update(){
+        this.$emit('update:number',this.number + 1)
+    }
+}
+
+3.兄弟组件之间的数据共享
+兄弟组件之间实现数据共享的方案是EventBus。可以借助于第三方的包mitt来创建eventBus对象，从而实现兄弟组件之间的数据共享。示意图如下：
+①
+    创建EventBus
+    const bus = mitt()
+    export default bus
+
+在数据的接收方和发送方共享EventBus对象
+②(数据接收方)
+    1.导入并得到EventBus实例对象
+    import bus from './eventBus.js'
+    2.调用EventBus的on()方法，声明自定义事件，通过时间回调接收数据
+    bus.on('自定义事件',{data}=>{})
+③(数据发送方)
+    1.导入并得到EventBus实例对象
+    import bus from './eventBus.js'
+    2.调用EventBus的emit()方法，向外发送数据
+    bus.emit('自定义事件',要发送的数据)
+
+3.1.安装mitt依赖包
+在项目中运行如下的命令，安装mitt依赖包
+npm install mitt@2.1.0
+
+3.2.创建公共的EventBus模块
+在项目中创建公共的eventBus模块如下：
+//eventBus.js
+//导入mitt包
+import mitt from 'mitt'
+//创建EventBus实例对象
+const bus = mitt()
+
+//将EventBus的实例对象共享出去
+export default bus
+
+3.3.在数据接收方自定义事件
+在数据接收方，调用bus.on('事件名称'，事件处理函数)方法注册一个自定义事件。示例代码如下：
+//导入eventBus.js模块，得到共享的bus对象
+import bus from './eventBus.js'
+
+export default {
+    data(){
+        return {
+            count:0
+        }
+    },
+    created(){
+        bus.on('countChange',(count)=>{
+            this.count = count
+        })
+    }
+}
+
+3.4.在数据发送方触发事件
+在数据发送方，调用bus.emit('事件名称',要发送的数据)方法触发自定义事件。示例代码如下：
+//导入eventBus.js模块，得到共享的bus对象
+import bus from './eventBus.js'
+
+export default {
+    data(){
+        return {
+            count:0
+        }
+    },
+    methods:{
+        addCount(){
+            this.count++
+            bus.emit('countChange',this.count)//调用bus.emit()方法触发自定义事件，并发送数据
+        }
+    }
+}
+
+4.后代关系组件之间的数据共享
+后代关系组件之间共享数据，指的是父节点的组件向其子孙组件共享数据。此时组件之间的嵌套关系比较复杂，可以使用provide和inject实现后代关系组件之间的数据共享。
+
+4.1.父节点通过provide共享数据
+父节点的组件可以通过provide方法，对其子孙组件共享数据：
+export default {
+    data(){
+        return {
+            color:'red'//1.定义"父组件"要向"子孙组件"共享的数据
+        }
+    },
+    provide(){//2.provide函数return的对象中，包含了"要向子孙组件共享的数据"
+        return {
+            color:this.color,
+        }
+    }
+}
+
+4.2.子孙节点通过inject接收数据
+子孙节点可以通过inject数组，接收父级节点向下共享的数据。示例代码如下：
+<template>
+    <h5>子孙组件 --- {{color}}</h5>
+</template>
+
+<script>
+export default {
+    //子孙组件，使用inject接收父节点向下共享的color数据，并在页面上使用
+    inject:['color']
+}
+</script>
+
+4.3.父节点对外共享响应式的数据
+父节点使用provide向下共享数据时，可以结合computed函数向下共享响应式的数据。示例代码如下：
+import { computed } from 'vue' //1.从vue中按需导入computed函数
+
+export default {
+    data(){
+        return { color:'red' }
+    },
+    provide(){
+        //2.使用computed函数，可以把要共享的数据"包装为"响应式的数据
+        color:computed(()=>{this.color})
+    }
+}
+
+4.4.子孙节点使用响应式的数据
+如果父级节点共享的是小响应式的数据，则子孙节点必须以.value的形式进行使用。示例代码如下：
+<template>
+    <!-- 响应式的数据，必须以.value的形式进行使用 -->
+    <h5>子孙组件 --- {{color.value}}</h5>
+</template>
+
+<script>
+export default {
+    //接收父节点向下共享的color数据，并在页面上使用
+    inject:['color']
+}
+</script>
+
+5.vuex（全局数据共享）
+vuex是终极的组件之间的数据共享方案。在企业级的vue项目开发中，vuex可以让组件之间的数据共享变得高效、清晰、且易于维护。

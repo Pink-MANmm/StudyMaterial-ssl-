@@ -1,0 +1,44 @@
+1.创建vite的项目
+按照顺序执行如下的命令，即可基于vite创建vue3.x的工程化项目：
+npm init vite-app 项目名称
+
+cd 项目名称
+npm install
+npm run dev
+
+2.梳理项目的结构
+使用vite创建的项目结构如下：
+其中：
+*node_modules目录用来存放第三方依赖包
+*public是公共的静态资源目录
+*src是项目的源代码目录（程序员写的所有代码都要存放到此目录下）
+*.gitignore是Git的忽略文件
+*index.html是SPA单页面应用程序中唯一的HTML页面
+*package.json是项目的包管理配置文件
+
+在src这个项目源代码目录之下，包含了如下的文件和文件夹：
+*assets目录用来存放项目中所有的静态资源文件（css、fonts等）
+*components目录用来存放项目中所有的自定义组件
+*App.vue是项目的根组件
+*index.css是项目的全局样式表文件
+*main.js是整个项目的打包入口文件
+
+3.vite项目的运行流程
+在工程化的项目中，vue要做的事情很单纯：通过main.js把App.vue渲染到index.html的指定区域中：
+①App.vue用来编写待渲染的模板结构
+②index.html中需要预留一个el区域
+③main.js把App.vue渲染到了index.html所预留的区域中
+
+4.在main.js中进行渲染
+按照vue3.x的标准用法，把App.vue中的模板内容渲染到index.html页面的el区域中：
+//1.从vue中按需导入createApp函数
+//   createApp函数的作用：创建vue的"单页面应用程序实例"
+import {createApp} from 'vue'
+//2.导入待渲染的App组件
+import App from './App.vue'
+
+//3.调用createApp()函数，返回值是"单页面应用程序的示例"，用常量 spa_app进行接收，
+//  同时把App组件作为参数传给createApp函数，表示把App渲染到index.html页面上
+const spa_app = createApp(App)
+//4.调用spa_app实例的mount方法，用来指定vue实际要控制的区域
+spa_app.mount('#app')
